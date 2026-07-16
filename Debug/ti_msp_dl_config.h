@@ -73,16 +73,48 @@ extern "C" {
 #define POWER_STARTUP_DELAY                                                (16)
 
 
-
+#define GPIO_HFXT_PORT                                                     GPIOA
+#define GPIO_HFXIN_PIN                                             DL_GPIO_PIN_5
+#define GPIO_HFXIN_IOMUX                                         (IOMUX_PINCM10)
+#define GPIO_HFXOUT_PIN                                            DL_GPIO_PIN_6
+#define GPIO_HFXOUT_IOMUX                                        (IOMUX_PINCM11)
 #define CPUCLK_FREQ                                                     80000000
 /* Defines for SYSPLL_ERR_01 Workaround */
 /* Represent 1.000 as 1000 */
 #define FLOAT_TO_INT_SCALE                                               (1000U)
-#define FCC_EXPECTED_RATIO                                                  2500
+#define FCC_EXPECTED_RATIO                                                  2000
 #define FCC_UPPER_BOUND                       (FCC_EXPECTED_RATIO * (1 + 0.003))
 #define FCC_LOWER_BOUND                       (FCC_EXPECTED_RATIO * (1 - 0.003))
 
 bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
+
+
+/* Defines for PWM_0 */
+#define PWM_0_INST                                                         TIMA1
+#define PWM_0_INST_IRQHandler                                   TIMA1_IRQHandler
+#define PWM_0_INST_INT_IRQN                                     (TIMA1_INT_IRQn)
+#define PWM_0_INST_CLK_FREQ                                             10000000
+/* GPIO defines for channel 0 */
+#define GPIO_PWM_0_C0_PORT                                                 GPIOB
+#define GPIO_PWM_0_C0_PIN                                          DL_GPIO_PIN_0
+#define GPIO_PWM_0_C0_IOMUX                                      (IOMUX_PINCM12)
+#define GPIO_PWM_0_C0_IOMUX_FUNC                     IOMUX_PINCM12_PF_TIMA1_CCP0
+#define GPIO_PWM_0_C0_IDX                                    DL_TIMER_CC_0_INDEX
+/* GPIO defines for channel 1 */
+#define GPIO_PWM_0_C1_PORT                                                 GPIOB
+#define GPIO_PWM_0_C1_PIN                                          DL_GPIO_PIN_1
+#define GPIO_PWM_0_C1_IOMUX                                      (IOMUX_PINCM13)
+#define GPIO_PWM_0_C1_IOMUX_FUNC                     IOMUX_PINCM13_PF_TIMA1_CCP1
+#define GPIO_PWM_0_C1_IDX                                    DL_TIMER_CC_1_INDEX
+
+
+
+/* Defines for TIMER_0 */
+#define TIMER_0_INST                                                     (TIMG0)
+#define TIMER_0_INST_IRQHandler                                 TIMG0_IRQHandler
+#define TIMER_0_INST_INT_IRQN                                   (TIMG0_INT_IRQn)
+#define TIMER_0_INST_LOAD_VALUE                                         (49999U)
+
 
 
 
@@ -115,6 +147,46 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 #define GPIO_I2C_OLED_IOMUX_SCL_FUNC                   IOMUX_PINCM15_PF_I2C1_SCL
 
 
+/* Defines for UART_0 */
+#define UART_0_INST                                                        UART0
+#define UART_0_INST_FREQUENCY                                           40000000
+#define UART_0_INST_IRQHandler                                  UART0_IRQHandler
+#define UART_0_INST_INT_IRQN                                      UART0_INT_IRQn
+#define GPIO_UART_0_RX_PORT                                                GPIOA
+#define GPIO_UART_0_TX_PORT                                                GPIOA
+#define GPIO_UART_0_RX_PIN                                        DL_GPIO_PIN_11
+#define GPIO_UART_0_TX_PIN                                        DL_GPIO_PIN_10
+#define GPIO_UART_0_IOMUX_RX                                     (IOMUX_PINCM22)
+#define GPIO_UART_0_IOMUX_TX                                     (IOMUX_PINCM21)
+#define GPIO_UART_0_IOMUX_RX_FUNC                      IOMUX_PINCM22_PF_UART0_RX
+#define GPIO_UART_0_IOMUX_TX_FUNC                      IOMUX_PINCM21_PF_UART0_TX
+#define UART_0_BAUD_RATE                                                (115200)
+#define UART_0_IBRD_40_MHZ_115200_BAUD                                      (21)
+#define UART_0_FBRD_40_MHZ_115200_BAUD                                      (45)
+
+
+
+
+
+/* Port definition for Pin Group TB6612 */
+#define TB6612_PORT                                                      (GPIOA)
+
+/* Defines for AIN1: GPIOA.16 with pinCMx 38 on package pin 9 */
+#define TB6612_AIN1_PIN                                         (DL_GPIO_PIN_16)
+#define TB6612_AIN1_IOMUX                                        (IOMUX_PINCM38)
+/* Defines for AIN2: GPIOA.17 with pinCMx 39 on package pin 10 */
+#define TB6612_AIN2_PIN                                         (DL_GPIO_PIN_17)
+#define TB6612_AIN2_IOMUX                                        (IOMUX_PINCM39)
+/* Defines for BIN1: GPIOA.14 with pinCMx 36 on package pin 7 */
+#define TB6612_BIN1_PIN                                         (DL_GPIO_PIN_14)
+#define TB6612_BIN1_IOMUX                                        (IOMUX_PINCM36)
+/* Defines for BIN2: GPIOA.13 with pinCMx 35 on package pin 6 */
+#define TB6612_BIN2_PIN                                         (DL_GPIO_PIN_13)
+#define TB6612_BIN2_IOMUX                                        (IOMUX_PINCM35)
+
+
+
+
 /* clang-format on */
 
 void SYSCFG_DL_init(void);
@@ -123,9 +195,16 @@ void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 
 bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
+void SYSCFG_DL_PWM_0_init(void);
+void SYSCFG_DL_TIMER_0_init(void);
 void SYSCFG_DL_I2C_MPU6050_init(void);
 void SYSCFG_DL_I2C_OLED_init(void);
+void SYSCFG_DL_UART_0_init(void);
 
+void SYSCFG_DL_SYSTICK_init(void);
+
+bool SYSCFG_DL_saveConfiguration(void);
+bool SYSCFG_DL_restoreConfiguration(void);
 
 #ifdef __cplusplus
 }

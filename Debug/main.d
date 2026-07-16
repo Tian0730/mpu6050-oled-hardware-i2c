@@ -87,6 +87,7 @@ main.o: ../main.c \
  ../main.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Software_I2C/oled_software_i2c.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Hardware_I2C/oled_hardware_i2c.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Software_SPI/oled_software_spi.h \
@@ -104,7 +105,10 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x_platform.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x_platform_log.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/LSM6DSV16X/lsm6dsv16x.h \
- D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/IMU_AHRS/imu_ahrs.h
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/IMU_AHRS/imu_ahrs.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/bsp_tb6612.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/AnglePID/angle_pid.h \
+ ../test.h
 ti_msp_dl_config.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/msp/msp.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/DeviceFamily.h:
@@ -191,6 +195,7 @@ D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_systick.h:
 ../main.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Software_I2C/oled_software_i2c.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Hardware_I2C/oled_hardware_i2c.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Software_SPI/oled_software_spi.h:
@@ -209,3 +214,6 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x_platform.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x_platform_log.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/LSM6DSV16X/lsm6dsv16x.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/IMU_AHRS/imu_ahrs.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/bsp_tb6612.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/AnglePID/angle_pid.h:
+../test.h:

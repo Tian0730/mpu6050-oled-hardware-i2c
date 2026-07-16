@@ -1,11 +1,15 @@
 "./main.o"
 "./ti_msp_dl_config.o"
 "./startup_mspm0g350x_ticlang.o"
+"./test.o"
+"./Drivers/AnglePID/angle_pid.o"
 "./Drivers/IMU_AHRS/imu_ahrs.o"
 "./Drivers/IMU_AHRS/mspm0_i2c.o"
+"./Drivers/MSPM0/board.o"
 "./Drivers/MSPM0/clock.o"
 "./Drivers/MSPM0/interrupt.o"
 "./Drivers/OLED_Hardware_I2C/oled_hardware_i2c.o"
+"./Drivers/TB6612_Motor/bsp_tb6612.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs
 -llibc.a

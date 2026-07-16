@@ -119,7 +119,9 @@ GEN_OPTS__QUOTED :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 . \
+Drivers/AnglePID \
 Drivers/IMU_AHRS \
 Drivers/MSPM0 \
 Drivers/OLED_Hardware_I2C \
+Drivers/TB6612_Motor \
 

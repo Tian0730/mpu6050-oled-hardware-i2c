@@ -1,4 +1,6 @@
 eclipse.preferences.version=1
+encoding//Debug/Drivers/AnglePID/subdir_rules.mk=UTF-8
+encoding//Debug/Drivers/AnglePID/subdir_vars.mk=UTF-8
 encoding//Debug/Drivers/IMU_AHRS/subdir_rules.mk=UTF-8
 encoding//Debug/Drivers/IMU_AHRS/subdir_vars.mk=UTF-8
 encoding//Debug/Drivers/MPU6050/subdir_rules.mk=UTF-8
@@ -7,6 +9,8 @@ encoding//Debug/Drivers/MSPM0/subdir_rules.mk=UTF-8
 encoding//Debug/Drivers/MSPM0/subdir_vars.mk=UTF-8
 encoding//Debug/Drivers/OLED_Hardware_I2C/subdir_rules.mk=UTF-8
 encoding//Debug/Drivers/OLED_Hardware_I2C/subdir_vars.mk=UTF-8
+encoding//Debug/Drivers/TB6612_Motor/subdir_rules.mk=UTF-8
+encoding//Debug/Drivers/TB6612_Motor/subdir_vars.mk=UTF-8
 encoding//Debug/makefile=UTF-8
 encoding//Debug/objects.mk=UTF-8
 encoding//Debug/sources.mk=UTF-8
