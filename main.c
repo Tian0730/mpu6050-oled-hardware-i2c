@@ -75,9 +75,7 @@ int main(void)
     OLED_ShowString(16*6,3,(uint8_t *)"Accel",8);
     OLED_ShowString(17*6,4,(uint8_t *)"Turn",8);
 
-    TurnByAngle_Start(90.0f);
-
-    // GoStraight_Start(300);
+    Square_Start(4, 90.0f, 2000);
 
     while (1) 
     {
@@ -127,52 +125,26 @@ int main(void)
         // sprintf((char *)oled_buffer, "%6d", imu->gz + imu->gz_offset);
         // OLED_ShowString(15*6,7,oled_buffer,8);
 
-        static int8_t turn_ret = -2;
-        static int8_t straight_active = 0;
-        static int8_t straight_started = 0;
-        static uint32_t straight_start_ms = 0;
-        static int8_t straight_stopped = 0;
-        turn_ret = Turn_Poll();
+        int8_t sq_ret = Square_Poll();
 
-        // GoStraight_Poll();
-        // OLED_ShowString(0, 6, (uint8_t *)"STGT", 8);
-
-        if (turn_ret == 0)
+        if (Square_GetState() == 0)
         {
             OLED_ShowString(0, 6, (uint8_t *)"TURN", 8);
             sprintf((char *)oled_buffer, "E:%4.1f %u", Turn_GetCurrentError(), Turn_GetStableCount());
             OLED_ShowString(5*8, 6, oled_buffer, 16);
         }
-        else if (turn_ret == 1 && !straight_active)
+        else if (Square_GetState() == 1)
         {
-            straight_active = 1;
-            sprintf((char *)oled_buffer, "GS:%d", GoStraight_Start(STRAIGHT_SPEED));
+            sprintf((char *)oled_buffer, "L%d", Square_GetLeg() + 1);
             OLED_ShowString(0, 6, oled_buffer, 16);
         }
-        else if (turn_ret == -1)
+        else if (sq_ret == 1)
+        {
+            OLED_ShowString(0, 6, (uint8_t *)"DONE", 8);
+        }
+        else if (sq_ret == -1)
         {
             OLED_ShowString(0, 6, (uint8_t *)"TOUT", 8);
-        }
-
-        if (straight_active && !straight_stopped)
-        {
-            if (!straight_started)
-            {
-                straight_started = 1;
-                straight_start_ms = tick_ms;
-            }
-
-            if ((tick_ms - straight_start_ms) < 5000)
-            {
-                GoStraight_Poll();
-                OLED_ShowString(0, 6, (uint8_t *)"STGT", 8);
-            }
-            else
-            {
-                GoStraight_Stop();
-                straight_stopped = 1;
-                OLED_ShowString(0, 6, (uint8_t *)"STOP", 8);
-            }
         }
     }
 }

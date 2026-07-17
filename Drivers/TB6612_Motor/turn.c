@@ -235,6 +235,66 @@ void GoStraight_Stop(void)
 }
 
 /* ================================================================
+ *  正方形行走
+ * ================================================================ */
+static uint8_t  g_sq_leg    = 0;
+static uint8_t  g_sq_state  = 0;  // 0=转弯 1=直行 2=完成
+static uint8_t  g_sq_total  = 4;
+static float    g_sq_angle  = 90.0f;
+static uint32_t g_sq_st_ms  = 2000;
+static uint32_t g_sq_tm_ms  = 0;
+
+int8_t Square_Start(uint8_t legs, float turn_angle, uint32_t straight_ms)
+{
+    g_sq_leg   = 0;
+    g_sq_total = legs;
+    g_sq_angle = turn_angle;
+    g_sq_st_ms = straight_ms;
+    g_sq_state = 0;
+    return TurnByAngle_Start(turn_angle);
+}
+
+int8_t Square_Poll(void)
+{
+    if (g_sq_state == 2) return 1;
+
+    if (g_sq_state == 0)
+    {
+        int8_t tr = Turn_Poll();
+        if (tr == 1)
+        {
+            GoStraight_Start(STRAIGHT_SPEED);
+            g_sq_tm_ms = tick_ms;
+            g_sq_state = 1;
+        }
+        else if (tr == -1) return -1;
+    }
+    else if (g_sq_state == 1)
+    {
+        if ((tick_ms - g_sq_tm_ms) < g_sq_st_ms)
+        {
+            GoStraight_Poll();
+        }
+        else
+        {
+            GoStraight_Stop();
+            g_sq_leg++;
+            if (g_sq_leg >= g_sq_total)
+            {
+                g_sq_state = 2;
+                return 1;
+            }
+            TurnByAngle_Start(g_sq_angle);
+            g_sq_state = 0;
+        }
+    }
+    return 0;
+}
+
+uint8_t Square_GetState(void) { return g_sq_state; }
+uint8_t Square_GetLeg(void)   { return g_sq_leg; }
+
+/* ================================================================
  *  状态查询接口
  * ================================================================ */
 TurnState_t Turn_GetState(void)        { return g_turn_state; }
