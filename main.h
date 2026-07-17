@@ -21,5 +21,6 @@
 #include "bsp_tb6612.h"
 #include "angle_pid.h"
 #include "test.h"
+#include "turn.h"   // 注意：test.h 和 turn.h  只能2选一
 
 #endif  /* #ifndef _MAIN_H_ */

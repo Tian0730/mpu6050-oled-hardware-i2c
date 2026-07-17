@@ -22,6 +22,7 @@ ORDERED_OBJS += \
 "./Drivers/MSPM0/interrupt.o" \
 "./Drivers/OLED_Hardware_I2C/oled_hardware_i2c.o" \
 "./Drivers/TB6612_Motor/bsp_tb6612.o" \
+"./Drivers/TB6612_Motor/turn.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -157,8 +158,8 @@ mpu6050-oled-hardware-i2c.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "test.o" "Drivers\AnglePID\angle_pid.o" "Drivers\IMU_AHRS\imu_ahrs.o" "Drivers\IMU_AHRS\mspm0_i2c.o" "Drivers\MSPM0\board.o" "Drivers\MSPM0\clock.o" "Drivers\MSPM0\interrupt.o" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.o" "Drivers\TB6612_Motor\bsp_tb6612.o" 
-	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "test.d" "Drivers\AnglePID\angle_pid.d" "Drivers\IMU_AHRS\imu_ahrs.d" "Drivers\IMU_AHRS\mspm0_i2c.d" "Drivers\MSPM0\board.d" "Drivers\MSPM0\clock.d" "Drivers\MSPM0\interrupt.d" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.d" "Drivers\TB6612_Motor\bsp_tb6612.d" 
+	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "test.o" "Drivers\AnglePID\angle_pid.o" "Drivers\IMU_AHRS\imu_ahrs.o" "Drivers\IMU_AHRS\mspm0_i2c.o" "Drivers\MSPM0\board.o" "Drivers\MSPM0\clock.o" "Drivers\MSPM0\interrupt.o" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.o" "Drivers\TB6612_Motor\bsp_tb6612.o" "Drivers\TB6612_Motor\turn.o" 
+	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "test.d" "Drivers\AnglePID\angle_pid.d" "Drivers\IMU_AHRS\imu_ahrs.d" "Drivers\IMU_AHRS\mspm0_i2c.d" "Drivers\MSPM0\board.d" "Drivers\MSPM0\clock.d" "Drivers\MSPM0\interrupt.d" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.d" "Drivers\TB6612_Motor\bsp_tb6612.d" "Drivers\TB6612_Motor\turn.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

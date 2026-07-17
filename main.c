@@ -75,7 +75,7 @@ int main(void)
     OLED_ShowString(16*6,3,(uint8_t *)"Accel",8);
     OLED_ShowString(17*6,4,(uint8_t *)"Turn",8);
 
-    Test_Turn90_Start();
+    TurnByAngle_Start(90.0f);
 
     while (1) 
     {
@@ -126,12 +126,12 @@ int main(void)
         // OLED_ShowString(15*6,7,oled_buffer,8);
 
         static int8_t turn_ret = -2;
-        turn_ret = Test_Turn90_Poll();
+        turn_ret = Turn_Poll();
 
         if (turn_ret == 0)
         {
             OLED_ShowString(0, 6, (uint8_t *)"TURN", 8);
-            sprintf((char *)oled_buffer, "E:%4.1f", Test_GetCurrentError());
+            sprintf((char *)oled_buffer, "E:%4.1f", Turn_GetCurrentError());
             OLED_ShowString(5*8, 6, oled_buffer, 16);
         }
         else if (turn_ret == 1)
