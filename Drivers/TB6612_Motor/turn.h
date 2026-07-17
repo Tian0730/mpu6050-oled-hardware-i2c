@@ -5,21 +5,30 @@
 
 /* ================================================================
  *  转弯 PID 参数（宏定义，方便调试）
+ *
+ *  调参要点：
+ *    KP 太大 → 过冲震荡；KP 太小 → 转不动
+ *    KD 太大 → 响应迟钝；KD 太小 → 震荡不止
+ *    BASE_SPEED 太大 → 接近目标时冲过头
+ *    MIN_SPEED  → 接近目标时的最低速度（克服静摩擦即可）
+ *    NEAR_ZONE  → 误差小于此值后自动切换 MIN_SPEED
  * ================================================================ */
-#define TURN_KP             2.0f
-#define TURN_KD             5.0f
+#define TURN_KP             0.5f   //0.01
+#define TURN_KD             0.15f    //0.6
 #define TURN_LIMIT          800.0f
-#define TURN_TOLERANCE      1.0f
-#define TURN_BASE_SPEED     200
-#define TURN_TIMEOUT_MS     3000
+#define TURN_TOLERANCE      15.0f
+#define TURN_BASE_SPEED     300
+#define TURN_MIN_SPEED      0
+#define TURN_NEAR_ZONE      10.0f
+#define TURN_TIMEOUT_MS     30000
 
 /* ================================================================
  *  走直线 PID 参数（宏定义，方便调试）
  * ================================================================ */
-#define STRAIGHT_KP         2.0f
-#define STRAIGHT_KD         3.0f
+#define STRAIGHT_KP         20.0f
+#define STRAIGHT_KD         0.0f
 #define STRAIGHT_LIMIT      250.0f
-#define STRAIGHT_SPEED      300
+#define STRAIGHT_SPEED      400
 
 /* ================================================================
  *  状态枚举
@@ -52,5 +61,6 @@ void   GoStraight_Stop(void);                   /* 停止 */
 TurnState_t Turn_GetState(void);
 float       Turn_GetCurrentError(void);
 float       Turn_GetCurrentOutput(void);
+uint8_t     Turn_GetStableCount(void);
 
 #endif

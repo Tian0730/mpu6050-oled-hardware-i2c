@@ -25,6 +25,7 @@ static float       g_turn_target;
 static float       g_turn_error;
 static float       g_turn_output;
 static uint32_t    g_turn_start_ms;
+static uint8_t     g_turn_stable_cnt;
 
 /* ================================================================
  *  走直线状态机
@@ -49,10 +50,11 @@ int8_t TurnToAngle_Start(float target_angle)
     AnglePD_Init(&g_turn_pd, TURN_KP, TURN_KD, TURN_LIMIT);
     AnglePD_Reset(&g_turn_pd);
 
-    g_turn_error    = 0.0f;
-    g_turn_output   = 0.0f;
-    g_turn_start_ms = tick_ms;
-    g_turn_state    = TURN_STATE_RUNNING;
+    g_turn_error      = 0.0f;
+    g_turn_output     = 0.0f;
+    g_turn_start_ms   = tick_ms;
+    g_turn_stable_cnt = 0;
+    g_turn_state      = TURN_STATE_RUNNING;
 
     float current = IMU_AHRS_Get_Yaw_Compensated();
     lc_printf("[Turn] TurnToAngle start: %.1f -> %.1f\r\n", current, g_turn_target);
@@ -74,6 +76,11 @@ int8_t TurnByAngle_Start(float delta_angle)
 
 /* ================================================================
  *  Turn_Poll —— 每帧在主循环中调用
+ *
+ *  关键修复：自适应 BASE_SPEED
+ *    误差大（> NEAR_ZONE）→ 用 BASE_SPEED 保证快速响应
+ *    误差小（< NEAR_ZONE）→ 线性缩放至 MIN_SPEED，不会归零
+ *    稳定检测（连续 N 帧误差在容差内）→ 判定到达
  * ================================================================ */
 int8_t Turn_Poll(void)
 {
@@ -90,8 +97,47 @@ int8_t Turn_Poll(void)
     g_turn_output = output;
     g_turn_error  = wrap_180(g_turn_target - current_yaw);
 
-    int8_t   sign  = (output > 0.0f) ? 1 : -1;
-    uint32_t speed = TURN_BASE_SPEED + (uint32_t)(fabsf(output));
+    float error_abs = fabsf(g_turn_error);
+
+    /*
+     *  稳定检测：连续 N 帧误差在容差内才判定到达
+     *  已改为用帧计数代替 error_delta，避免 KD 震荡导致死锁
+     */
+    #define TURN_STABLE_FRAMES  5
+    if (error_abs < TURN_TOLERANCE)
+    {
+        g_turn_stable_cnt++;
+        if (g_turn_stable_cnt >= TURN_STABLE_FRAMES)
+        {
+            TB6612_Motor_Stop();
+            g_turn_state = TURN_STATE_DONE;
+            lc_printf("[Turn] done! yaw=%.1f error=%.2f\r\n", current_yaw, g_turn_error);
+            return 1;
+        }
+    }
+    else
+    {
+        g_turn_stable_cnt = 0;
+    }
+
+    /*
+     *  自适应 BASE_SPEED：
+     *  误差 > NEAR_ZONE  → 全速 BASE_SPEED
+     *  误差 < NEAR_ZONE  → 线性缩放至 MIN_SPEED
+     */
+    uint32_t base;
+    if (error_abs > TURN_NEAR_ZONE)
+    {
+        base = TURN_BASE_SPEED;
+    }
+    else
+    {
+        base = TURN_MIN_SPEED +
+               (uint32_t)((TURN_BASE_SPEED - TURN_MIN_SPEED) * error_abs / TURN_NEAR_ZONE);
+    }
+
+    int8_t   sign  = (output > 0.0f) ? -1 : 1;
+    uint32_t speed = base + (uint32_t)(fabsf(output));
     if (speed > 999) speed = 999;
 
     if (sign > 0)
@@ -100,18 +146,14 @@ int8_t Turn_Poll(void)
         BO_Control(0, speed);
     }
     else
-    {
+    {       
         AO_Control(0, speed);
         BO_Control(1, speed);
     }
 
-    if (fabsf(g_turn_error) < TURN_TOLERANCE)
-    {
-        TB6612_Motor_Stop();
-        g_turn_state = TURN_STATE_DONE;
-        lc_printf("[Turn] done! yaw=%.1f error=%.2f\r\n", current_yaw, g_turn_error);
-        return 1;
-    }
+    /* 诊断日志：打印误差和计数器，确认是否被意外重置 */
+    lc_printf("[Turn] err=%.2f cnt=%u spd=%lu\r\n",
+              g_turn_error, g_turn_stable_cnt, speed);
 
     if ((tick_ms - g_turn_start_ms) > TURN_TIMEOUT_MS)
     {
@@ -198,3 +240,4 @@ void GoStraight_Stop(void)
 TurnState_t Turn_GetState(void)        { return g_turn_state; }
 float       Turn_GetCurrentError(void)  { return g_turn_error; }
 float       Turn_GetCurrentOutput(void) { return g_turn_output; }
+uint8_t     Turn_GetStableCount(void)   { return g_turn_stable_cnt; }

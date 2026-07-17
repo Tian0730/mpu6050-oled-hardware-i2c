@@ -78,7 +78,7 @@ KP_DISTURBED：
  *  Yaw 漂移补偿参数
  * ================================================================ */
 /* Yaw 校准样本数（用于线性回归） */
-#define IMU_AHRS_YAW_CALIB_SAMPLES  500
+#define IMU_AHRS_YAW_CALIB_SAMPLES  1000
 
 /* 默认控制周期（秒），dt 无效时的回退值 */
 #define IMU_AHRS_CTRL_PERIOD_S      0.01f
