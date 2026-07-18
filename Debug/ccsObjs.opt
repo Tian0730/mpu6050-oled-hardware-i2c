@@ -8,8 +8,10 @@
 "./Drivers/MSPM0/board.o"
 "./Drivers/MSPM0/clock.o"
 "./Drivers/MSPM0/interrupt.o"
+"./Drivers/Mix_Control/control_mixer.o"
 "./Drivers/OLED_Hardware_I2C/oled_hardware_i2c.o"
 "./Drivers/TB6612_Motor/bsp_tb6612.o"
+"./Drivers/TB6612_Motor/follow.o"
 "./Drivers/TB6612_Motor/turn.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs

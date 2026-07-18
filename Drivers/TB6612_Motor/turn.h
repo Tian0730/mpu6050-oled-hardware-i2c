@@ -70,5 +70,7 @@ TurnState_t Turn_GetState(void);
 float       Turn_GetCurrentError(void);
 float       Turn_GetCurrentOutput(void);
 uint8_t     Turn_GetStableCount(void);
+int16_t     Turn_GetStraightCorrection(void);
+int16_t     GoStraight_GetCorrection(void);
 
 #endif

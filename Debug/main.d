@@ -108,8 +108,10 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/IMU_AHRS/imu_ahrs.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/bsp_tb6612.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/AnglePID/angle_pid.h \
- ../test.h \
- D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/turn.h
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/turn.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/follow.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mix_Control/control_mixer.h \
+ ../test.h
 ti_msp_dl_config.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/msp/msp.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/DeviceFamily.h:
@@ -217,5 +219,7 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/LSM6DSV16X/lsm6dsv16x.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/IMU_AHRS/imu_ahrs.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/bsp_tb6612.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/AnglePID/angle_pid.h:
-../test.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/turn.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/follow.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mix_Control/control_mixer.h:
+../test.h:

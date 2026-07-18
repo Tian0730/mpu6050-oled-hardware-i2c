@@ -122,6 +122,7 @@ SUBDIRS := \
 Drivers/AnglePID \
 Drivers/IMU_AHRS \
 Drivers/MSPM0 \
+Drivers/Mix_Control \
 Drivers/OLED_Hardware_I2C \
 Drivers/TB6612_Motor \
 

@@ -75,7 +75,8 @@ int main(void)
     OLED_ShowString(16*6,3,(uint8_t *)"Accel",8);
     OLED_ShowString(17*6,4,(uint8_t *)"Turn",8);
 
-    Square_Start(4, 90.0f, 2000);
+    GoStraight_Start(300);
+    Mixer_Init(300);
 
     while (1) 
     {
@@ -118,33 +119,71 @@ int main(void)
         sprintf((char *)oled_buffer, "%6.1f", IMU_AHRS_TurnAngle_Get());
         OLED_ShowString(15*6,5,oled_buffer,8);
 
-        // sprintf((char *)oled_buffer, "%6d", imu->gx + imu->gx_offset);
-        // OLED_ShowString(15*6,5,oled_buffer,8);
-        // sprintf((char *)oled_buffer, "%6d", imu->gy + imu->gy_offset);
-        // OLED_ShowString(15*6,6,oled_buffer,8);
-        // sprintf((char *)oled_buffer, "%6d", imu->gz + imu->gz_offset);
-        // OLED_ShowString(15*6,7,oled_buffer,8);
+        /* ================================================================
+         *  全程陀螺仪角度环在线
+         *  - 黑线直行：灰度位置环 + 陀螺仪角度环（双环）
+         *  - 转弯：灰度识别触发，陀螺仪角度环转90°
+         *  - 空白区域：仅陀螺仪角度环保持航向（单环）
+         * ================================================================ */
+        static enum { ST_STRAIGHT, ST_TURNING } state = ST_STRAIGHT;
+        static uint8_t was_on_black = 0;
 
-        int8_t sq_ret = Square_Poll();
-
-        if (Square_GetState() == 0)
+        if (state == ST_TURNING)
         {
-            OLED_ShowString(0, 6, (uint8_t *)"TURN", 8);
-            sprintf((char *)oled_buffer, "E:%4.1f %u", Turn_GetCurrentError(), Turn_GetStableCount());
-            OLED_ShowString(5*8, 6, oled_buffer, 16);
-        }
-        else if (Square_GetState() == 1)
-        {
-            sprintf((char *)oled_buffer, "L%d", Square_GetLeg() + 1);
+            was_on_black = 0;
+            int8_t tr = Turn_Poll();
+            if (tr == 1 || tr == -1)
+            {
+                GoStraight_Start(300);
+                state = ST_STRAIGHT;
+            }
+            sprintf((char *)oled_buffer, "TURN E:%.1f", Turn_GetCurrentError());
             OLED_ShowString(0, 6, oled_buffer, 16);
         }
-        else if (sq_ret == 1)
+        else
         {
-            OLED_ShowString(0, 6, (uint8_t *)"DONE", 8);
-        }
-        else if (sq_ret == -1)
-        {
-            OLED_ShowString(0, 6, (uint8_t *)"TOUT", 8);
+            IRDM_read_sensors();
+
+            if (IRDM_NeedTurnLeft())
+            {
+                was_on_black = 0;
+                mspm0_delay_ms(600);
+                GoStraight_Stop();
+                TurnByAngle_Start(-90.0f);
+                state = ST_TURNING;
+            }
+            else if (IRDM_NeedTurnRight())
+            {
+                was_on_black = 0;
+                mspm0_delay_ms(600);
+                GoStraight_Stop();
+                TurnByAngle_Start(90.0f);
+                state = ST_TURNING;
+            }
+            else if (IRDM_IsBlackLine())
+            {
+                was_on_black = 1;
+                IRDM_UpdatePositionPID();
+                int16_t follow_corr = IRDM_GetCorrection();
+                int16_t angle_corr = GoStraight_GetCorrection();
+                Mixer_SetFollowDiff(follow_corr);
+                Mixer_SetAngleDiff(angle_corr);
+                Mixer_Apply();
+
+                sprintf((char *)oled_buffer, "A%+dF%+d", angle_corr, follow_corr);
+                OLED_ShowString(0, 6, oled_buffer, 16);
+            }
+            else
+            {
+                if (was_on_black)
+                {
+                    was_on_black = 0;
+                    GoStraight_Start(300);
+                }
+                GoStraight_Poll();
+                sprintf((char *)oled_buffer, "WHITE");
+                OLED_ShowString(0, 6, oled_buffer, 16);
+            }
         }
     }
 }

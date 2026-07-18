@@ -301,3 +301,23 @@ TurnState_t Turn_GetState(void)        { return g_turn_state; }
 float       Turn_GetCurrentError(void)  { return g_turn_error; }
 float       Turn_GetCurrentOutput(void) { return g_turn_output; }
 uint8_t     Turn_GetStableCount(void)   { return g_turn_stable_cnt; }
+
+int16_t Turn_GetStraightCorrection(void)
+{
+    if (g_straight_state != TURN_STATE_RUNNING)
+        return 0;
+    
+    float current_yaw = IMU_AHRS_Get_Yaw_Compensated();
+    AnglePD_Update(&g_straight_pd, g_straight_target_yaw, current_yaw);
+    return (int16_t)g_straight_pd.output;
+}
+
+int16_t GoStraight_GetCorrection(void)
+{
+    if (g_straight_state != TURN_STATE_RUNNING)
+        return 0;
+
+    float current_yaw = IMU_AHRS_Get_Yaw_Compensated();
+    AnglePD_Update(&g_straight_pd, g_straight_target_yaw, current_yaw);
+    return (int16_t)g_straight_pd.output;
+}

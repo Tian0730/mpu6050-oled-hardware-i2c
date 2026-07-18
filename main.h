@@ -1,6 +1,8 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
+// #include "control_config.h"
+
 #include "clock.h"
 #include "interrupt.h"
 #include "board.h"
@@ -20,7 +22,9 @@
 #include "imu_ahrs.h"
 #include "bsp_tb6612.h"
 #include "angle_pid.h"
+#include "turn.h"
+#include "follow.h"
+#include "control_mixer.h"
 #include "test.h"
-#include "turn.h"   // 注意：test.h 和 turn.h  只能2选一
 
 #endif  /* #ifndef _MAIN_H_ */

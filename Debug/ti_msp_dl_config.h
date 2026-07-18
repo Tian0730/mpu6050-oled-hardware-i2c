@@ -183,6 +183,38 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 /* Defines for BIN2: GPIOA.13 with pinCMx 35 on package pin 6 */
 #define TB6612_BIN2_PIN                                         (DL_GPIO_PIN_13)
 #define TB6612_BIN2_IOMUX                                        (IOMUX_PINCM35)
+/* Defines for f1: GPIOA.9 with pinCMx 20 on package pin 55 */
+#define FOLLOW_f1_PORT                                                   (GPIOA)
+#define FOLLOW_f1_PIN                                            (DL_GPIO_PIN_9)
+#define FOLLOW_f1_IOMUX                                          (IOMUX_PINCM20)
+/* Defines for f2: GPIOB.27 with pinCMx 58 on package pin 29 */
+#define FOLLOW_f2_PORT                                                   (GPIOB)
+#define FOLLOW_f2_PIN                                           (DL_GPIO_PIN_27)
+#define FOLLOW_f2_IOMUX                                          (IOMUX_PINCM58)
+/* Defines for f3: GPIOB.26 with pinCMx 57 on package pin 28 */
+#define FOLLOW_f3_PORT                                                   (GPIOB)
+#define FOLLOW_f3_PIN                                           (DL_GPIO_PIN_26)
+#define FOLLOW_f3_IOMUX                                          (IOMUX_PINCM57)
+/* Defines for f4: GPIOB.25 with pinCMx 56 on package pin 27 */
+#define FOLLOW_f4_PORT                                                   (GPIOB)
+#define FOLLOW_f4_PIN                                           (DL_GPIO_PIN_25)
+#define FOLLOW_f4_IOMUX                                          (IOMUX_PINCM56)
+/* Defines for f5: GPIOB.24 with pinCMx 52 on package pin 23 */
+#define FOLLOW_f5_PORT                                                   (GPIOB)
+#define FOLLOW_f5_PIN                                           (DL_GPIO_PIN_24)
+#define FOLLOW_f5_IOMUX                                          (IOMUX_PINCM52)
+/* Defines for f6: GPIOB.23 with pinCMx 51 on package pin 22 */
+#define FOLLOW_f6_PORT                                                   (GPIOB)
+#define FOLLOW_f6_PIN                                           (DL_GPIO_PIN_23)
+#define FOLLOW_f6_IOMUX                                          (IOMUX_PINCM51)
+/* Defines for f7: GPIOB.22 with pinCMx 50 on package pin 21 */
+#define FOLLOW_f7_PORT                                                   (GPIOB)
+#define FOLLOW_f7_PIN                                           (DL_GPIO_PIN_22)
+#define FOLLOW_f7_IOMUX                                          (IOMUX_PINCM50)
+/* Defines for f8: GPIOB.21 with pinCMx 49 on package pin 20 */
+#define FOLLOW_f8_PORT                                                   (GPIOB)
+#define FOLLOW_f8_PIN                                           (DL_GPIO_PIN_21)
+#define FOLLOW_f8_IOMUX                                          (IOMUX_PINCM49)
 
 
 
