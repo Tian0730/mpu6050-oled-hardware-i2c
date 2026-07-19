@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 /* ================================================================
- *  转弯 PID 参数（宏定义，方便调试）
+ *  转弯角度环 PID 参数
  *
  *  调参要点：
  *    KP 太大 → 过冲震荡；KP 太小 → 转不动
@@ -20,12 +20,12 @@
 #define TURN_BASE_SPEED     300
 #define TURN_MIN_SPEED      0
 #define TURN_NEAR_ZONE      10.0f
-#define TURN_TIMEOUT_MS     30000
+#define TURN_TIMEOUT_MS     3000
 
 /* ================================================================
- *  走直线 PID 参数（宏定义，方便调试）
+ *  直线角度环 PID 参数
  * ================================================================ */
-#define STRAIGHT_KP         5.0f
+#define STRAIGHT_KP         15.0f
 #define STRAIGHT_KD         0.15f
 #define STRAIGHT_LIMIT      100.0f
 #define STRAIGHT_SPEED      400

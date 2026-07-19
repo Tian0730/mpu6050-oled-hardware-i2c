@@ -18,7 +18,7 @@ typedef enum {
 
 void     IRDM_read_sensors(void);
 float    IRDM_calculate_bias(void);
-void     IRDM_UpdatePositionPID(void);
+void     IRDM_UpdatePositionPID(float dt);
 int16_t  IRDM_GetCorrection(void);
 uint8_t  IRDM_IsBlackLine(void);
 uint8_t  IRDM_NeedTurnLeft(void);

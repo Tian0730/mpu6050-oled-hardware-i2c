@@ -9,18 +9,18 @@
  * 大偏差：由主状态机处理（f1=右转触发，f8=左转触发）
  ******************************************************************/
 
-//==================== 参数配置 ====================
-#define KP              10     // 比例系数100
+//==================== 灰度位置环PID相关参数 ====================
+#define KP              60      // 比例系数
 #define KI              0       // 积分系数（消除稳态误差）
-#define KD              0       // 微分系数（抑制振动）
-#define MAX_CORRECTION  100     // 最大修正量
+#define KD              20.0f   // 微分系数（抑制振动）
+#define MAX_CORRECTION  200     // 最大修正量
 #define MAX_INTEGRAL    100     // 积分限幅（防止积分饱和）
 
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
 static uint8_t sensor_filtered[8] = {0};  // 滤波后的传感器状态
 static int32_t sensor_history[8] = {0};    // 传感器历史记录
-#define SENSOR_FILTER_COUNT 2  // 连续2次相同状态才确认
+#define SENSOR_FILTER_COUNT 3  // 连续3次相同状态才确认
 
 // // 外侧传感器独立消抖（2次确认，比主滤波更快）
 // static uint8_t turn_f1_filtered = 0;
@@ -53,12 +53,14 @@ void IRDM_read_sensors(void)
     // 传感器状态滤波：连续多次相同状态才确认
     for (int i = 0; i < 8; i++) {
         if (raw_states[i]) {
-            sensor_history[i]++;
+            if (sensor_history[i] < SENSOR_FILTER_COUNT)  // ← 上限锁死
+                sensor_history[i]++;
             if (sensor_history[i] >= SENSOR_FILTER_COUNT) {
                 sensor_filtered[i] = 1;
             }
         } else {
-            sensor_history[i]--;
+            if (sensor_history[i] > -SENSOR_FILTER_COUNT) // ← 下限锁死
+                sensor_history[i]--;
             if (sensor_history[i] <= -SENSOR_FILTER_COUNT) {
                 sensor_filtered[i] = 0;
             }
@@ -102,7 +104,7 @@ float IRDM_calculate_bias(void)
 /******************************************************************
  * 位置环PID更新（仅计算修正量，不驱动电机）
  ******************************************************************/
-void IRDM_UpdatePositionPID(void)
+void IRDM_UpdatePositionPID(float dt)
 {
     float bias = IRDM_calculate_bias();
 
@@ -111,14 +113,19 @@ void IRDM_UpdatePositionPID(void)
         return;
     }
 
-    integral += bias;
+    /* 积分项：dt 归一化，消除主循环频率依赖 */
+    integral += bias * dt;
     if (integral > MAX_INTEGRAL) integral = MAX_INTEGRAL;
     if (integral < -MAX_INTEGRAL) integral = -MAX_INTEGRAL;
 
-    float bias_diff = bias - last_bias;
-    int correction = (int)(bias * KP + integral * KI + bias_diff * KD);
-
+    /* 微分项：除以 dt 得到真正的变化率 */
+    float bias_diff = 0.0f;
+    if (dt > 0.0001f) {
+        bias_diff = (bias - last_bias) / dt;
+    }
     last_bias = bias;
+
+    int correction = (int)(bias * KP + integral * KI + bias_diff * KD);
 
     if (correction > MAX_CORRECTION) correction = MAX_CORRECTION;
     if (correction < -MAX_CORRECTION) correction = -MAX_CORRECTION;

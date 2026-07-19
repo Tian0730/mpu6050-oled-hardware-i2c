@@ -105,7 +105,9 @@ int main(void)
             {
                 yaw_calib_done = 1;
                 IMU_AHRS_TurnAngle_Reset();
+#if USE_ANGLE_CONTROL
                 GoStraight_Start(300);
+#endif
             }
             continue;
         }
@@ -164,25 +166,43 @@ int main(void)
         }
 #else
         /* ================================================================
-         *  全程陀螺仪角度环在线
-         *  - 黑线直行：灰度位置环 + 陀螺仪角度环（双环）
-         *  - 转弯：灰度识别触发，陀螺仪角度环转90°
-         *  - 空白区域：仅陀螺仪角度环保持航向（单环）
+         *  正方形赛道巡线状态机
+         *
+         *  黑线区域：位置环 + 角度环 + 速度环（三环全开）
+         *  空白区域：角度环 + 速度环（航向保持 + 恒速）
+         *  弯道检测：f1右转 / f8左转 → 延时预转 → IMU转90°
+         *
+         *  可调参数：
+         *    PRE_TURN_MS   - 预转延时(ms)，车子中心走到弯道中心所需时间
+         *    TURN_COOLDOWN - 转弯后冷却(ms)，防止同一个弯重复触发
          * ================================================================ */
+        #define PRE_TURN_MS    300
+        #define TURN_COOLDOWN  500
+
         static enum { ST_STRAIGHT, ST_PRE_TURN, ST_TURNING } state = ST_STRAIGHT;
         static uint8_t was_on_black = 0;
         static uint32_t pre_turn_deadline = 0;
         static float    pre_turn_angle = 0.0f;
         static uint32_t turn_cooldown_deadline = 0;
 
-        if (state == ST_PRE_TURN)
+                if (state == ST_PRE_TURN)
         {
-            AO_Control(1, 300);
-            BO_Control(1, 300);
+            /* 预转期间：速度环 + 角度环，确保直线走到弯道中心 */
+#if USE_ANGLE_CONTROL
+            int16_t angle_corr = GoStraight_GetCorrection();
+            Mixer_SetAngleDiff(angle_corr);
+#else
+            Mixer_SetAngleDiff(0);
+#endif
+            Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
+            Mixer_SetFollowDiff(0);
+            Mixer_Apply();
 
             if ((int32_t)(tick_ms - pre_turn_deadline) >= 0)
             {
+#if USE_ANGLE_CONTROL
                 GoStraight_Stop();
+#endif
                 TurnByAngle_Start(pre_turn_angle);
                 state = ST_TURNING;
             }
@@ -193,9 +213,11 @@ int main(void)
             int8_t tr = Turn_Poll();
             if (tr == 1 || tr == -1)
             {
+#if USE_ANGLE_CONTROL
                 GoStraight_Start(300);
+#endif
                 state = ST_STRAIGHT;
-                turn_cooldown_deadline = tick_ms + 5000;
+                turn_cooldown_deadline = tick_ms + TURN_COOLDOWN;
             }
             sprintf((char *)oled_buffer, "TURN E:%.1f", Turn_GetCurrentError());
             OLED_ShowString(0, 6, oled_buffer, 16);
@@ -209,24 +231,29 @@ int main(void)
             if (!cooldown && IRDM_NeedTurnLeftFast())
             {
                 was_on_black = 0;
-                pre_turn_deadline = tick_ms + 600;
+                pre_turn_deadline = tick_ms + PRE_TURN_MS;
                 pre_turn_angle = -90.0f;
                 state = ST_PRE_TURN;
             }
             else if (!cooldown && IRDM_NeedTurnRightFast())
             {
                 was_on_black = 0;
-                pre_turn_deadline = tick_ms + 600;
+                pre_turn_deadline = tick_ms + PRE_TURN_MS;
                 pre_turn_angle = 90.0f;
                 state = ST_PRE_TURN;
             }
             else if (IRDM_IsBlackLine())
             {
                 was_on_black = 1;
-                IRDM_UpdatePositionPID();
+#if USE_FOLLOW_CONTROL
+                IRDM_UpdatePositionPID(dt);
                 int16_t follow_corr = IRDM_GetCorrection();
+#else
+                int16_t follow_corr = 0;
+#endif
 
                 /* 位置偏差大时，抑制角度环，优先回到线上 */
+#if USE_ANGLE_CONTROL
                 int16_t follow_abs = (follow_corr > 0) ? follow_corr : -follow_corr;
                 int16_t angle_corr = 0;
                 if (follow_abs <= 80)
@@ -237,22 +264,37 @@ int main(void)
                         angle_corr = (int16_t)((int32_t)angle_corr * (80 - follow_abs) / 40);
                     }
                 }
-                
+#else
+                int16_t angle_corr = 0;
+#endif
+
+                /* 按配置开关决定几环参与 */
                 Mixer_SetFollowDiff(follow_corr);
                 Mixer_SetAngleDiff(angle_corr);
+                Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
                 Mixer_Apply();
-
-                // sprintf((char *)oled_buffer, "A%+dF%+d", angle_corr, follow_corr);
-                // OLED_ShowString(0, 6, oled_buffer, 16);
             }
             else
             {
+                /* 空白区域：按配置开关决定环参与 */
                 if (was_on_black)
                 {
                     was_on_black = 0;
+#if USE_ANGLE_CONTROL
                     GoStraight_Start(300);
+#endif
                 }
+#if USE_ANGLE_CONTROL
                 GoStraight_Poll();
+                int16_t angle_corr = GoStraight_GetCorrection();
+#else
+                int16_t angle_corr = 0;
+#endif
+                Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
+                Mixer_SetAngleDiff(angle_corr);
+                Mixer_SetFollowDiff(0);
+                Mixer_Apply();
+
                 sprintf((char *)oled_buffer, "WHITE");
                 OLED_ShowString(0, 6, oled_buffer, 16);
             }

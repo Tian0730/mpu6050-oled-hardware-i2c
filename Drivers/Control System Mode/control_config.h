@@ -12,8 +12,8 @@
  *    单独调试位置环 → USE_FOLLOW_CONTROL=1, 其余=0
  *    双环(角度+位置) → 两个都=1
  * ================================================================ */
-#define USE_ANGLE_CONTROL   0   // 角度环控制 (MPU6050 + turn)
-#define USE_FOLLOW_CONTROL  0   // 位置环控制 (灰度传感器 + follow)
+#define USE_ANGLE_CONTROL   1   // 角度环控制 (MPU6050 + turn)
+#define USE_FOLLOW_CONTROL  1   // 位置环控制 (灰度传感器 + follow)
 #define USE_SPEED_CONTROL   1   // 速度环控制 (编码器 + speed_control)
 
 #endif  /* _CONTROL_CONFIG_H_ */
