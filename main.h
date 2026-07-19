@@ -1,7 +1,7 @@
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
-// #include "control_config.h"
+#include "control_config.h"
 
 #include "clock.h"
 #include "interrupt.h"
@@ -25,6 +25,9 @@
 #include "turn.h"
 #include "follow.h"
 #include "control_mixer.h"
+#include "bsp_motor_hallencoder.h"
+#include "encoder.h"
+#include "speed_control.h"
 #include "test.h"
 
 #endif  /* #ifndef _MAIN_H_ */

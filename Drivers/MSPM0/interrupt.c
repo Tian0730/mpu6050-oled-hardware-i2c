@@ -112,6 +112,7 @@ void UART_WIT_INST_IRQHandler(void)
 }
 #endif
 
+#if 0
 void GROUP1_IRQHandler(void)
 {
     switch (DL_Interrupt_getPendingGroup(DL_INTERRUPT_GROUP_1)) {
@@ -188,3 +189,4 @@ void GROUP1_IRQHandler(void)
         #endif
     }
 }
+#endif

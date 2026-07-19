@@ -75,8 +75,12 @@ int main(void)
     OLED_ShowString(16*6,3,(uint8_t *)"Accel",8);
     OLED_ShowString(17*6,4,(uint8_t *)"Turn",8);
 
-    GoStraight_Start(300);
     Mixer_Init(300);
+
+#if USE_SPEED_CONTROL
+    Motor_Init();
+    SpeedLoop_Init(200);
+#endif
 
     while (1) 
     {
@@ -88,6 +92,11 @@ int main(void)
         IMU_AHRS_Update_Data();           // 读取原始数据
         IMU_AHRS_Update_Attitude(dt);     // Mahony 姿态解算
 
+#if USE_SPEED_CONTROL
+        SpeedLoop_Update(dt);
+#endif
+
+#if USE_ANGLE_CONTROL || USE_FOLLOW_CONTROL
         static int8_t yaw_calib_done = 0;
         if (yaw_calib_done == 0)
         {
@@ -96,39 +105,89 @@ int main(void)
             {
                 yaw_calib_done = 1;
                 IMU_AHRS_TurnAngle_Reset();
+                GoStraight_Start(300);
             }
+            continue;
+        }
+#endif
+
+        /* OLED 每 50ms 更新一次，避免阻塞控制回路 */
+        static uint32_t oled_last_update = 0;
+        if ((int32_t)(now - oled_last_update) >= 50)
+        {
+            oled_last_update = now;
+
+            const IMU_AHRS_Data_t *imu = IMU_AHRS_GetData();
+
+            sprintf((char *)oled_buffer, "%-6.1f", imu->pitch);
+            OLED_ShowString(5*8,0,oled_buffer,16);
+            sprintf((char *)oled_buffer, "%-6.1f", imu->roll);
+            OLED_ShowString(5*8,2,oled_buffer,16);
+            sprintf((char *)oled_buffer, "%-6.1f", IMU_AHRS_Get_Yaw_Compensated());
+            OLED_ShowString(5*8,4,oled_buffer,16);
+
+            sprintf((char *)oled_buffer, "%6d", imu->ax);
+            OLED_ShowString(15*6,0,oled_buffer,8);
+            sprintf((char *)oled_buffer, "%6d", imu->ay);
+            OLED_ShowString(15*6,1,oled_buffer,8);
+            sprintf((char *)oled_buffer, "%6d", imu->az);
+            OLED_ShowString(15*6,2,oled_buffer,8);
+
+            sprintf((char *)oled_buffer, "%6.1f", IMU_AHRS_TurnAngle_Get());
+            OLED_ShowString(15*6,5,oled_buffer,8);
         }
 
-        const IMU_AHRS_Data_t *imu = IMU_AHRS_GetData();
-        // 用 imu->pitch, imu->roll, imu->yaw 替代原来的全局变量
+#if USE_SPEED_CONTROL && !USE_ANGLE_CONTROL && !USE_FOLLOW_CONTROL
+        /* ================================================================
+         *  纯速度环模式：恒定目标速度直行
+         *  仅用于调试速度环 PID 参数
+         * ================================================================ */
+        {
+            Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
+            Mixer_SetAngleDiff(0);
+            Mixer_SetFollowDiff(0);
+            Mixer_Apply();
 
-        sprintf((char *)oled_buffer, "%-6.1f", imu->pitch);
-        OLED_ShowString(5*8,0,oled_buffer,16);
-        sprintf((char *)oled_buffer, "%-6.1f", imu->roll);
-        OLED_ShowString(5*8,2,oled_buffer,16);
-        sprintf((char *)oled_buffer, "%-6.1f", IMU_AHRS_Get_Yaw_Compensated());
-        OLED_ShowString(5*8,4,oled_buffer,16);
-
-        sprintf((char *)oled_buffer, "%6d", imu->ax);
-        OLED_ShowString(15*6,0,oled_buffer,8);
-        sprintf((char *)oled_buffer, "%6d", imu->ay);
-        OLED_ShowString(15*6,1,oled_buffer,8);
-        sprintf((char *)oled_buffer, "%6d", imu->az);
-        OLED_ShowString(15*6,2,oled_buffer,8);
-
-        sprintf((char *)oled_buffer, "%6.1f", IMU_AHRS_TurnAngle_Get());
-        OLED_ShowString(15*6,5,oled_buffer,8);
-
+            static uint32_t spd_oled_last = 0;
+            if ((int32_t)(now - spd_oled_last) >= 200)
+            {
+                spd_oled_last = now;
+                sprintf((char *)oled_buffer, "S:%.0f T:%.0f",
+                        SpeedLoop_GetCurrentSpeed(),
+                        (float)200);
+                OLED_ShowString(0, 6, oled_buffer, 8);
+                sprintf((char *)oled_buffer, "E:%.1f O:%.0f",
+                        SpeedLoop_GetError(),
+                        (float)SpeedLoop_GetCorrection());
+                OLED_ShowString(0, 7, oled_buffer, 8);
+            }
+        }
+#else
         /* ================================================================
          *  全程陀螺仪角度环在线
          *  - 黑线直行：灰度位置环 + 陀螺仪角度环（双环）
          *  - 转弯：灰度识别触发，陀螺仪角度环转90°
          *  - 空白区域：仅陀螺仪角度环保持航向（单环）
          * ================================================================ */
-        static enum { ST_STRAIGHT, ST_TURNING } state = ST_STRAIGHT;
+        static enum { ST_STRAIGHT, ST_PRE_TURN, ST_TURNING } state = ST_STRAIGHT;
         static uint8_t was_on_black = 0;
+        static uint32_t pre_turn_deadline = 0;
+        static float    pre_turn_angle = 0.0f;
+        static uint32_t turn_cooldown_deadline = 0;
 
-        if (state == ST_TURNING)
+        if (state == ST_PRE_TURN)
+        {
+            AO_Control(1, 300);
+            BO_Control(1, 300);
+
+            if ((int32_t)(tick_ms - pre_turn_deadline) >= 0)
+            {
+                GoStraight_Stop();
+                TurnByAngle_Start(pre_turn_angle);
+                state = ST_TURNING;
+            }
+        }
+        else if (state == ST_TURNING)
         {
             was_on_black = 0;
             int8_t tr = Turn_Poll();
@@ -136,6 +195,7 @@ int main(void)
             {
                 GoStraight_Start(300);
                 state = ST_STRAIGHT;
+                turn_cooldown_deadline = tick_ms + 5000;
             }
             sprintf((char *)oled_buffer, "TURN E:%.1f", Turn_GetCurrentError());
             OLED_ShowString(0, 6, oled_buffer, 16);
@@ -144,34 +204,46 @@ int main(void)
         {
             IRDM_read_sensors();
 
-            if (IRDM_NeedTurnLeft())
+            uint8_t cooldown = ((int32_t)(tick_ms - turn_cooldown_deadline) < 0);
+
+            if (!cooldown && IRDM_NeedTurnLeftFast())
             {
                 was_on_black = 0;
-                mspm0_delay_ms(600);
-                GoStraight_Stop();
-                TurnByAngle_Start(-90.0f);
-                state = ST_TURNING;
+                pre_turn_deadline = tick_ms + 600;
+                pre_turn_angle = -90.0f;
+                state = ST_PRE_TURN;
             }
-            else if (IRDM_NeedTurnRight())
+            else if (!cooldown && IRDM_NeedTurnRightFast())
             {
                 was_on_black = 0;
-                mspm0_delay_ms(600);
-                GoStraight_Stop();
-                TurnByAngle_Start(90.0f);
-                state = ST_TURNING;
+                pre_turn_deadline = tick_ms + 600;
+                pre_turn_angle = 90.0f;
+                state = ST_PRE_TURN;
             }
             else if (IRDM_IsBlackLine())
             {
                 was_on_black = 1;
                 IRDM_UpdatePositionPID();
                 int16_t follow_corr = IRDM_GetCorrection();
-                int16_t angle_corr = GoStraight_GetCorrection();
+
+                /* 位置偏差大时，抑制角度环，优先回到线上 */
+                int16_t follow_abs = (follow_corr > 0) ? follow_corr : -follow_corr;
+                int16_t angle_corr = 0;
+                if (follow_abs <= 80)
+                {
+                    angle_corr = GoStraight_GetCorrection();
+                    if (follow_abs > 40)
+                    {
+                        angle_corr = (int16_t)((int32_t)angle_corr * (80 - follow_abs) / 40);
+                    }
+                }
+                
                 Mixer_SetFollowDiff(follow_corr);
                 Mixer_SetAngleDiff(angle_corr);
                 Mixer_Apply();
 
-                sprintf((char *)oled_buffer, "A%+dF%+d", angle_corr, follow_corr);
-                OLED_ShowString(0, 6, oled_buffer, 16);
+                // sprintf((char *)oled_buffer, "A%+dF%+d", angle_corr, follow_corr);
+                // OLED_ShowString(0, 6, oled_buffer, 16);
             }
             else
             {
@@ -185,5 +257,6 @@ int main(void)
                 OLED_ShowString(0, 6, oled_buffer, 16);
             }
         }
+#endif
     }
 }

@@ -29,8 +29,9 @@ void Mixer_SetSpeedDiff(int16_t diff)    // 预留速度环
 void Mixer_Apply(void)
 {
     int32_t total = (int32_t)g_angle_diff + (int32_t)g_follow_diff;
-    int32_t left  = (int32_t)g_mix_base + total;
-    int32_t right = (int32_t)g_mix_base - total;
+    int32_t base  = (int32_t)g_mix_base + (int32_t)g_speed_diff;
+    int32_t left  = base + total;
+    int32_t right = base - total;
 
     if (left < 0)   left = 0;
     if (left > 999) left = 999;

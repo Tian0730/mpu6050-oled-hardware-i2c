@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//Debug/Drivers/AnglePID/subdir_rules.mk=UTF-8
 encoding//Debug/Drivers/AnglePID/subdir_vars.mk=UTF-8
+encoding//Debug/Drivers/Encoder/subdir_rules.mk=UTF-8
+encoding//Debug/Drivers/Encoder/subdir_vars.mk=UTF-8
 encoding//Debug/Drivers/IMU_AHRS/subdir_rules.mk=UTF-8
 encoding//Debug/Drivers/IMU_AHRS/subdir_vars.mk=UTF-8
 encoding//Debug/Drivers/MPU6050/subdir_rules.mk=UTF-8

@@ -120,6 +120,7 @@ GEN_OPTS__QUOTED :=
 SUBDIRS := \
 . \
 Drivers/AnglePID \
+Drivers/Encoder \
 Drivers/IMU_AHRS \
 Drivers/MSPM0 \
 Drivers/Mix_Control \

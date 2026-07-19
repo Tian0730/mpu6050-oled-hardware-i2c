@@ -85,6 +85,7 @@ main.o: ../main.c \
  D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_interrupt.h \
  D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_systick.h \
  ../main.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/control_config.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h \
@@ -111,6 +112,9 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/turn.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/follow.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mix_Control/control_mixer.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/bsp_motor_hallencoder.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h \
  ../test.h
 ti_msp_dl_config.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/msp/msp.h:
@@ -196,6 +200,7 @@ D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/dl_wwdt.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_interrupt.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_systick.h:
 ../main.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/control_config.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h:
@@ -222,4 +227,7 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/AnglePID/angle_pid.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/turn.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/TB6612_Motor/follow.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mix_Control/control_mixer.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/bsp_motor_hallencoder.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h:
 ../test.h:

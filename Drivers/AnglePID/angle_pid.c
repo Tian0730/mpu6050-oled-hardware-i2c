@@ -24,8 +24,8 @@ float AnglePD_Update(AnglePD_t *pd, float target, float current)
     float error = target - current;
 
     /* 角度环绕处理：保证 error 在 [-180, 180] 范围内 */
-    if (error > 180.0f)       error -= 360.0f;
-    else if (error < -180.0f) error += 360.0f;
+    while (error > 180.0f)  error -= 360.0f;
+    while (error < -180.0f) error += 360.0f;
 
     float derivative = error - pd->last_error;
     pd->last_error = error;

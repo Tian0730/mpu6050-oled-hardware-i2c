@@ -23,6 +23,8 @@ int16_t  IRDM_GetCorrection(void);
 uint8_t  IRDM_IsBlackLine(void);
 uint8_t  IRDM_NeedTurnLeft(void);
 uint8_t  IRDM_NeedTurnRight(void);
+uint8_t  IRDM_NeedTurnLeftFast(void);
+uint8_t  IRDM_NeedTurnRightFast(void);
 uint8_t  IRDM_get_sensor_state(uint8_t index);
 
 #endif  /* _FOLLOW_H_ */

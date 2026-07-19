@@ -215,6 +215,28 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 #define FOLLOW_f8_PORT                                                   (GPIOB)
 #define FOLLOW_f8_PIN                                           (DL_GPIO_PIN_21)
 #define FOLLOW_f8_IOMUX                                          (IOMUX_PINCM49)
+/* Port definition for Pin Group ENCODER */
+#define ENCODER_PORT                                                     (GPIOA)
+
+/* Defines for E1A: GPIOA.24 with pinCMx 54 on package pin 25 */
+// pins affected by this interrupt request:["E1A","E1B","E2A","E2B"]
+#define ENCODER_INT_IRQN                                        (GPIOA_INT_IRQn)
+#define ENCODER_INT_IIDX                        (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
+#define ENCODER_E1A_IIDX                                    (DL_GPIO_IIDX_DIO24)
+#define ENCODER_E1A_PIN                                         (DL_GPIO_PIN_24)
+#define ENCODER_E1A_IOMUX                                        (IOMUX_PINCM54)
+/* Defines for E1B: GPIOA.26 with pinCMx 59 on package pin 30 */
+#define ENCODER_E1B_IIDX                                    (DL_GPIO_IIDX_DIO26)
+#define ENCODER_E1B_PIN                                         (DL_GPIO_PIN_26)
+#define ENCODER_E1B_IOMUX                                        (IOMUX_PINCM59)
+/* Defines for E2A: GPIOA.8 with pinCMx 19 on package pin 54 */
+#define ENCODER_E2A_IIDX                                     (DL_GPIO_IIDX_DIO8)
+#define ENCODER_E2A_PIN                                          (DL_GPIO_PIN_8)
+#define ENCODER_E2A_IOMUX                                        (IOMUX_PINCM19)
+/* Defines for E2B: GPIOA.28 with pinCMx 3 on package pin 35 */
+#define ENCODER_E2B_IIDX                                    (DL_GPIO_IIDX_DIO28)
+#define ENCODER_E2B_PIN                                         (DL_GPIO_PIN_28)
+#define ENCODER_E2B_IOMUX                                         (IOMUX_PINCM3)
 
 
 
@@ -225,6 +247,7 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+void SYSCFG_DL_SYSCTL_CLK_init(void);
 
 bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 void SYSCFG_DL_PWM_0_init(void);

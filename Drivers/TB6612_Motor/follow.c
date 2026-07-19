@@ -4,13 +4,13 @@
 #include "follow.h"
 
 /******************************************************************
- * 循迹控制（方案4：仅提供位置环PID修正量，不直接驱动电机）
+ * 循迹控制（仅提供位置环PID修正量，不直接驱动电机）
  * 小偏差：比例控制微调
  * 大偏差：由主状态机处理（f1=右转触发，f8=左转触发）
  ******************************************************************/
 
 //==================== 参数配置 ====================
-#define KP              100     // 比例系数100
+#define KP              10     // 比例系数100
 #define KI              0       // 积分系数（消除稳态误差）
 #define KD              0       // 微分系数（抑制振动）
 #define MAX_CORRECTION  100     // 最大修正量
@@ -19,8 +19,13 @@
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
 static uint8_t sensor_filtered[8] = {0};  // 滤波后的传感器状态
-static uint32_t sensor_history[8] = {0};   // 传感器历史记录
-#define SENSOR_FILTER_COUNT 3  // 连续3次相同状态才确认
+static int32_t sensor_history[8] = {0};    // 传感器历史记录
+#define SENSOR_FILTER_COUNT 2  // 连续2次相同状态才确认
+
+// // 外侧传感器独立消抖（2次确认，比主滤波更快）
+// static uint8_t turn_f1_filtered = 0;
+// static uint8_t turn_f8_filtered = 0;
+// #define TURN_FILTER_COUNT 2
 
 static int16_t last_correction = 0;
 
@@ -60,6 +65,17 @@ void IRDM_read_sensors(void)
         }
         sensor_states[i] = sensor_filtered[i];
     }
+    // // 外侧传感器 f1/f8 独立消抖（2次确认，确保转弯检测灵敏）
+    // {
+    //     static int8_t f1_cnt = 0, f8_cnt = 0;
+    //     if (raw_states[0]) { if (f1_cnt <  TURN_FILTER_COUNT) f1_cnt++; }
+    //     else               { if (f1_cnt > -TURN_FILTER_COUNT) f1_cnt--; }
+    //     turn_f1_filtered = (f1_cnt >= TURN_FILTER_COUNT) ? 1 : 0;
+
+    //     if (raw_states[7]) { if (f8_cnt <  TURN_FILTER_COUNT) f8_cnt++; }
+    //     else               { if (f8_cnt > -TURN_FILTER_COUNT) f8_cnt--; }
+    //     turn_f8_filtered = (f8_cnt >= TURN_FILTER_COUNT) ? 1 : 0;
+    // }
 }
 
 /******************************************************************
@@ -123,7 +139,7 @@ int16_t IRDM_GetCorrection(void)
  ******************************************************************/
 uint8_t IRDM_IsBlackLine(void)
 {
-    for (int i = 2; i < 6; i++) {
+    for (int i = 0; i < 8; i++) {
         if (sensor_states[i]) return 1;
     }
     return 0;
@@ -143,6 +159,22 @@ uint8_t IRDM_NeedTurnLeft(void)
 uint8_t IRDM_NeedTurnRight(void)
 {
     return sensor_states[0];
+}
+
+/******************************************************************
+ * 是否需要左转（f8 原始状态，快速识别）
+ ******************************************************************/
+uint8_t IRDM_NeedTurnLeftFast(void)
+{
+    return (uint8_t)(1 - !(DL_GPIO_readPins(FOLLOW_f8_PORT, FOLLOW_f8_PIN)));
+}
+
+/******************************************************************
+ * 是否需要右转（f1 原始状态，快速识别）
+ ******************************************************************/
+uint8_t IRDM_NeedTurnRightFast(void)
+{
+    return (uint8_t)(1 - !(DL_GPIO_readPins(FOLLOW_f1_PORT, FOLLOW_f1_PIN)));
 }
 
 /******************************************************************

@@ -16,7 +16,7 @@
 #define TURN_KP             0.5f   //0.01
 #define TURN_KD             0.15f    //0.6
 #define TURN_LIMIT          800.0f
-#define TURN_TOLERANCE      15.0f
+#define TURN_TOLERANCE      5.0f
 #define TURN_BASE_SPEED     300
 #define TURN_MIN_SPEED      0
 #define TURN_NEAR_ZONE      10.0f
@@ -25,9 +25,9 @@
 /* ================================================================
  *  走直线 PID 参数（宏定义，方便调试）
  * ================================================================ */
-#define STRAIGHT_KP         20.0f
-#define STRAIGHT_KD         0.0f
-#define STRAIGHT_LIMIT      250.0f
+#define STRAIGHT_KP         5.0f
+#define STRAIGHT_KD         0.15f
+#define STRAIGHT_LIMIT      100.0f
 #define STRAIGHT_SPEED      400
 
 /* ================================================================
