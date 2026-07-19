@@ -16,7 +16,7 @@
 #define TURN_KP             0.5f   //0.01
 #define TURN_KD             0.15f    //0.6
 #define TURN_LIMIT          800.0f
-#define TURN_TOLERANCE      5.0f
+#define TURN_TOLERANCE      1.5f
 #define TURN_BASE_SPEED     300
 #define TURN_MIN_SPEED      0
 #define TURN_NEAR_ZONE      10.0f
@@ -25,9 +25,9 @@
 /* ================================================================
  *  直线角度环 PID 参数
  * ================================================================ */
-#define STRAIGHT_KP         15.0f
-#define STRAIGHT_KD         0.15f
-#define STRAIGHT_LIMIT      100.0f
+#define STRAIGHT_KP         35.0f
+#define STRAIGHT_KD         0.5f
+#define STRAIGHT_LIMIT      150.0f
 #define STRAIGHT_SPEED      400
 
 /* ================================================================
@@ -47,11 +47,13 @@ int8_t TurnToAngle_Start(float target_angle);   /* 转到绝对 Yaw 角度 */
 int8_t TurnByAngle_Start(float delta_angle);    /* 转相对角度（+右/-左） */
 int8_t Turn_Poll(void);                         /* 轮询：0=执行中 1=完成 -1=超时 -2=空闲 */
 void   Turn_Stop(void);                         /* 手动停止 */
+float  Turn_GetTarget(void);
 
 /* ================================================================
  *  走直线 API（非阻塞，带航向保持）
  * ================================================================ */
 int8_t GoStraight_Start(uint32_t speed);        /* 启动走直线，保持当前航向 */
+int8_t GoStraight_StartAt(float target_yaw, uint32_t speed); /* 指定目标航向走直线 */
 int8_t GoStraight_Poll(void);                   /* 轮询：0=执行中 -2=空闲 */
 void   GoStraight_Stop(void);                   /* 停止 */
 

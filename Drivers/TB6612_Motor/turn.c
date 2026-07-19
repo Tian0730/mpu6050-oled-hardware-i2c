@@ -177,6 +177,14 @@ void Turn_Stop(void)
 }
 
 /* ================================================================
+ *  Turn_GetTarget —— 获取转弯目标角度
+ * ================================================================ */
+float Turn_GetTarget(void)
+{
+    return g_turn_target;
+}
+
+/* ================================================================
  *  GoStraight_Start —— 走直线（带航向保持）
  * ================================================================ */
 int8_t GoStraight_Start(uint32_t speed)
@@ -195,6 +203,28 @@ int8_t GoStraight_Start(uint32_t speed)
 
     g_straight_state = TURN_STATE_RUNNING;
     lc_printf("[Turn] GoStraight start: yaw=%.1f speed=%lu\r\n", g_straight_target_yaw, speed);
+    return 0;
+}
+
+/* ================================================================
+ *  GoStraight_StartAt —— 走直线，指定目标航向（不快照当前yaw）
+ * ================================================================ */
+int8_t GoStraight_StartAt(float target_yaw, uint32_t speed)
+{
+    if (IMU_AHRS_GetStatus() != IMU_AHRS_STATUS_READY)
+        return -2;
+
+    if (g_turn_state == TURN_STATE_RUNNING)
+        return -3;
+
+    g_straight_target_yaw = target_yaw;
+    g_straight_speed      = speed;
+
+    AnglePD_Init(&g_straight_pd, STRAIGHT_KP, STRAIGHT_KD, STRAIGHT_LIMIT);
+    AnglePD_Reset(&g_straight_pd);
+
+    g_straight_state = TURN_STATE_RUNNING;
+    lc_printf("[Turn] GoStraight startAt: yaw=%.1f speed=%lu\r\n", g_straight_target_yaw, speed);
     return 0;
 }
 

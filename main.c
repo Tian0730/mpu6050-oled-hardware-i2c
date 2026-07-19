@@ -214,7 +214,7 @@ int main(void)
             if (tr == 1 || tr == -1)
             {
 #if USE_ANGLE_CONTROL
-                GoStraight_Start(300);
+                GoStraight_StartAt(Turn_GetTarget(), 300);
 #endif
                 state = ST_STRAIGHT;
                 turn_cooldown_deadline = tick_ms + TURN_COOLDOWN;
@@ -277,13 +277,13 @@ int main(void)
             else
             {
                 /* 空白区域：按配置开关决定环参与 */
-                if (was_on_black)
-                {
+                // if (was_on_black)
+                // {
                     was_on_black = 0;
-#if USE_ANGLE_CONTROL
-                    GoStraight_Start(300);
-#endif
-                }
+// #if USE_ANGLE_CONTROL
+//                     GoStraight_Start(300);
+// #endif
+                // }
 #if USE_ANGLE_CONTROL
                 GoStraight_Poll();
                 int16_t angle_corr = GoStraight_GetCorrection();
@@ -291,6 +291,7 @@ int main(void)
                 int16_t angle_corr = 0;
 #endif
                 Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
+                // Mixer_SetSpeedDiff(0);
                 Mixer_SetAngleDiff(angle_corr);
                 Mixer_SetFollowDiff(0);
                 Mixer_Apply();
