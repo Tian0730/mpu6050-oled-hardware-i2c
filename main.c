@@ -77,13 +77,26 @@ int main(void)
 
     Mixer_Init(300);
 
+#if USE_VOFA_DEBUG
+    VOFA_Init();
+#endif
+
 #if USE_SPEED_CONTROL
     Motor_Init();
     SpeedLoop_Init(200);
 #endif
 
+#if USE_OBSTACLE_AVOIDANCE
+    Ultrasonic_Avoidance_Init();
+#endif
+
     while (1) 
     {
+#if USE_OBSTACLE_AVOIDANCE
+        Ultrasonic_Test_Display(oled_buffer);       // 测试模式
+        // Ultrasonic_Avoidance_Update(oled_buffer);   // 避障模式
+        continue;
+#endif
         static uint32_t last_update = 0;
         uint32_t now = tick_ms;
         float dt = (float)(now - last_update) / 1000.0f;
@@ -91,6 +104,21 @@ int main(void)
 
         IMU_AHRS_Update_Data();           // 读取原始数据
         IMU_AHRS_Update_Attitude(dt);     // Mahony 姿态解算
+
+#if USE_VOFA_DEBUG
+        VOFA_ReceivePoll();
+        static uint32_t vofa_last = 0;
+        if ((int32_t)(now - vofa_last) >= 20)
+        {
+            vofa_last = now;
+            VOFA_Output();
+        }
+        if (g_vofa_stop)
+        {
+            TB6612_Motor_Stop();
+            continue;
+        }
+#endif
 
 #if USE_SPEED_CONTROL
         SpeedLoop_Update(dt);

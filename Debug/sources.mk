@@ -126,4 +126,6 @@ Drivers/MSPM0 \
 Drivers/Mix_Control \
 Drivers/OLED_Hardware_I2C \
 Drivers/TB6612_Motor \
+Drivers/Ultrasonic_GPIO \
+Drivers/VOFA \
 

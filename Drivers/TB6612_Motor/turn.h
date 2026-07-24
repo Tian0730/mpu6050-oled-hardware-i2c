@@ -75,4 +75,11 @@ uint8_t     Turn_GetStableCount(void);
 int16_t     Turn_GetStraightCorrection(void);
 int16_t     GoStraight_GetCorrection(void);
 
+float GoStraight_GetPTerm(void);
+float GoStraight_GetDTerm(void);
+float GoStraight_GetError(void);
+float GoStraight_GetOutput(void);
+void  GoStraight_SetKP(float kp);
+void  GoStraight_SetKD(float kd);
+
 #endif

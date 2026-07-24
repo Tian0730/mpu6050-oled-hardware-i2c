@@ -1,15 +1,23 @@
-#ifndef __SPEED_PID_H__
-#define __SPEED_PID_H__
+#ifndef _SPEED_PID_H_
+#define _SPEED_PID_H_
+
+#include <stdint.h>
 
 typedef struct {
-    float kp;               // 比例系数
-    float ki;               // 积分系数
-    float kd;               // 微分系数
-    float integral_limit;   // 积分限幅（抗积分饱和）
-    float output_limit;     // 输出限幅
-    float last_error;       // 上次误差（用于微分计算）
-    float integral;         // 积分累加值
-    float output;           // 当前输出值
+    float kp;
+    float ki;
+    float kd;
+    float integral_limit;
+    float output_limit;
+    float last_error;
+    float integral;
+    float output;
+    /// === VOFA+ 新增字段 ===
+    float p_term;
+    float i_term;
+    float d_term;
+    float current_error;
+    /// === VOFA+ 新增字段 END ===
 } SpeedPID_t;
 
 void SpeedPID_Init(SpeedPID_t *pid, float kp, float ki, float kd,
@@ -17,4 +25,15 @@ void SpeedPID_Init(SpeedPID_t *pid, float kp, float ki, float kd,
 float SpeedPID_Update(SpeedPID_t *pid, float target, float current, float dt);
 void SpeedPID_Reset(SpeedPID_t *pid);
 
-#endif /* __SPEED_PID_H__ */
+/// === VOFA+ 新增接口 ===
+float SpeedPID_GetPTerm(const SpeedPID_t *pid);
+float SpeedPID_GetITerm(const SpeedPID_t *pid);
+float SpeedPID_GetDTerm(const SpeedPID_t *pid);
+float SpeedPID_GetError(const SpeedPID_t *pid);
+float SpeedPID_GetOutput(const SpeedPID_t *pid);
+void  SpeedPID_SetKP(SpeedPID_t *pid, float kp);
+void  SpeedPID_SetKI(SpeedPID_t *pid, float ki);
+void  SpeedPID_SetKD(SpeedPID_t *pid, float kd);
+/// === VOFA+ 新增接口 END ===
+
+#endif

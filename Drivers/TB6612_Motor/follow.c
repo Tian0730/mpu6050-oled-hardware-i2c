@@ -9,12 +9,18 @@
  * 大偏差：由主状态机处理（f1=右转触发，f8=左转触发）
  ******************************************************************/
 
-//==================== 灰度位置环PID相关参数 ====================
-#define KP              30      // 比例系数
-#define KI              0       // 积分系数（消除稳态误差）
-#define KD              14.0f   // 微分系数（抑制振动）
-#define MAX_CORRECTION  200     // 最大修正量
-#define MAX_INTEGRAL    100     // 积分限幅（防止积分饱和）
+// //==================== 灰度位置环PID相关参数 ====================
+// #define KP              30      // 比例系数
+// #define KI              0       // 积分系数（消除稳态误差）
+// #define KD              14.0f   // 微分系数（抑制振动）
+// #define MAX_CORRECTION  200     // 最大修正量
+// #define MAX_INTEGRAL    100     // 积分限幅（防止积分饱和）
+
+static float g_follow_kp = 30.0f;
+static float g_follow_ki = 0.0f;
+static float g_follow_kd = 14.0f;
+#define  MAX_CORRECTION  200
+#define  MAX_INTEGRAL    100
 
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
@@ -32,6 +38,11 @@ static int16_t last_correction = 0;
 // PID控制变量
 static float last_bias = 0.0f;  // 上次偏差，用于计算微分项
 static float integral = 0.0f;   // 积分累积项，用于消除稳态误差
+
+static float follow_p_term = 0.0f;
+static float follow_i_term = 0.0f;
+static float follow_d_term = 0.0f;
+static float follow_bias   = 0.0f;
 
 /******************************************************************
  * 读取传感器状态
@@ -125,7 +136,11 @@ void IRDM_UpdatePositionPID(float dt)
     }
     last_bias = bias;
 
-    int correction = (int)(bias * KP + integral * KI + bias_diff * KD);
+    follow_bias   = bias;
+    follow_p_term = bias * g_follow_kp;
+    follow_i_term = integral * g_follow_ki;
+    follow_d_term = bias_diff * g_follow_kd;
+    int correction = (int)(follow_p_term + follow_i_term + follow_d_term);
 
     if (correction > MAX_CORRECTION) correction = MAX_CORRECTION;
     if (correction < -MAX_CORRECTION) correction = -MAX_CORRECTION;
@@ -192,3 +207,11 @@ uint8_t IRDM_get_sensor_state(uint8_t index)
     if (index > 7) return 0;
     return sensor_states[index];
 }
+
+float FollowLoop_GetBias(void)  { return follow_bias; }
+float FollowLoop_GetPTerm(void) { return follow_p_term; }
+float FollowLoop_GetITerm(void) { return follow_i_term; }
+float FollowLoop_GetDTerm(void) { return follow_d_term; }
+void  FollowLoop_SetKP(float kp) { g_follow_kp = kp; lc_printf("[VOFA] Follow KP=%.2f\r\n", kp); }
+void  FollowLoop_SetKI(float ki) { g_follow_ki = ki; lc_printf("[VOFA] Follow KI=%.2f\r\n", ki); }
+void  FollowLoop_SetKD(float kd) { g_follow_kd = kd; lc_printf("[VOFA] Follow KD=%.2f\r\n", kd); }

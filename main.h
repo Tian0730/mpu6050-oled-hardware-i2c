@@ -14,6 +14,7 @@
 #include "oled_hardware_spi.h"
 #include "ultrasonic_capture.h"
 #include "ultrasonic_gpio.h"
+#include "Ultrasonic_Control.h"
 #include "bno08x_uart_rvc.h"
 #include "wit.h"
 #include "vl53l0x.h"
@@ -28,6 +29,7 @@
 #include "bsp_motor_hallencoder.h"
 #include "encoder.h"
 #include "speed_control.h"
+#include "vofa_debug.h"
 #include "test.h"
 
 #endif  /* #ifndef _MAIN_H_ */

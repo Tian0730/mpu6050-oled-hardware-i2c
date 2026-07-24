@@ -15,11 +15,11 @@
  *    INTEGRAL_LIMIT → 防止积分饱和，建议设为 OUTPUT_LIMIT 的 60%~80%
  *    OUTPUT_LIMIT   → 速度环输出上限，对应 mixer 的速度修正量
  * ================================================================ */
-#define SPEED_KP             1.5f
-#define SPEED_KI             0.6f
-#define SPEED_KD             0.05f
-#define SPEED_INTEGRAL_LIMIT 250.0f
-#define SPEED_OUTPUT_LIMIT   350.0f
+#define SPEED_KP             1.2f       // 1.2
+#define SPEED_KI             0.0f      // 0.01
+#define SPEED_KD             0.5f       // 0.2
+#define SPEED_INTEGRAL_LIMIT 300.0f
+#define SPEED_OUTPUT_LIMIT   400.0f
 
 /**
  * @brief 初始化速度环
@@ -61,5 +61,13 @@ float SpeedLoop_GetError(void);
  * @brief 重置速度环（清除积分和误差历史）
  */
 void SpeedLoop_Reset(void);
+
+float SpeedLoop_GetTarget(void);
+float SpeedLoop_GetPTerm(void);
+float SpeedLoop_GetITerm(void);
+float SpeedLoop_GetDTerm(void);
+void  SpeedLoop_SetKP(float kp);
+void  SpeedLoop_SetKI(float ki);
+void  SpeedLoop_SetKD(float kd);
 
 #endif /* __SPEED_CONTROL_H__ */

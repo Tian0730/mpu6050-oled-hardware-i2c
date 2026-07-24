@@ -13,6 +13,10 @@ static int32_t accum_left_pulses  = 0;
 static int32_t accum_right_pulses = 0;
 static int32_t decim_count = 0;
 
+// 路程累积 (mm)，前进为正，后退为负
+static float total_left_distance_mm  = 0.0f;
+static float total_right_distance_mm = 0.0f;
+
 /**
  * @brief 更新车轮速度数据（累积式降采样）
  * @details 每次定时器中断(5ms)累积脉冲，每4次(20ms)计算一次速度
@@ -49,6 +53,10 @@ uint8_t IRDM_update_wheel_speed(void)
     filtered_left_speed_mmps  = filtered_left_speed_mmps  * (1.0f - a) + wheel_speed.left_speed_mmps  * a;
     filtered_right_speed_mmps = filtered_right_speed_mmps * (1.0f - a) + wheel_speed.right_speed_mmps * a;
 
+    /* 路程累积：脉冲数 × 每脉冲距离 */
+    total_left_distance_mm  += accum_left_pulses  * MM_PER_PULSE;
+    total_right_distance_mm += accum_right_pulses * MM_PER_PULSE;
+    
     /* 重置累积 */
     accum_left_pulses  = 0;
     accum_right_pulses = 0;
@@ -123,4 +131,43 @@ int32_t IRDM_get_encoder_pulses(int dir)
     } else {
         return wheel_speed.right_pulses;
     }
+}
+
+/**
+ * @brief 获取左右轮累计行驶路程
+ * @param left_mm  [out] 左轮累计路程 (mm)
+ * @param right_mm [out] 右轮累计路程 (mm)
+ * @note  前进为正，后退为负
+ */
+void IRDM_get_distance(float *left_mm, float *right_mm)
+{
+    if (left_mm)  *left_mm  = total_left_distance_mm;
+    if (right_mm) *right_mm = total_right_distance_mm;
+}
+
+/**
+ * @brief 获取左右轮平均累计路程
+ * @return 平均累计路程 (mm)
+ */
+float IRDM_get_average_distance(void)
+{
+    return (total_left_distance_mm + total_right_distance_mm) / 2.0f;
+}
+
+/**
+ * @brief 重置路程累积（左右轮均归零）
+ */
+void IRDM_reset_distance(void)
+{
+    total_left_distance_mm  = 0.0f;
+    total_right_distance_mm = 0.0f;
+}
+
+/**
+ * @brief 获取每个脉冲对应的行驶距离
+ * @return 每脉冲距离 (mm/pulse)
+ */
+float IRDM_get_mm_per_pulse(void)
+{
+    return MM_PER_PULSE;
 }

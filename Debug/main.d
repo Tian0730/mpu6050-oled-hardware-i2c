@@ -95,6 +95,7 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Hardware_SPI/oled_hardware_spi.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_Capture/ultrasonic_capture.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_GPIO/ultrasonic_gpio.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_GPIO/Ultrasonic_Control.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/BNO08X_UART_RVC/bno08x_uart_rvc.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/WIT/wit.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x.h \
@@ -115,6 +116,7 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/bsp_motor_hallencoder.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VOFA/vofa_debug.h \
  ../test.h
 ti_msp_dl_config.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/msp/msp.h:
@@ -210,6 +212,7 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Software_SPI/oled_software_
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/OLED_Hardware_SPI/oled_hardware_spi.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_Capture/ultrasonic_capture.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_GPIO/ultrasonic_gpio.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Ultrasonic_GPIO/Ultrasonic_Control.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/BNO08X_UART_RVC/bno08x_uart_rvc.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/WIT/wit.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VL53L0X/vl53l0x.h:
@@ -230,4 +233,5 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mix_Control/control_mixer.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/bsp_motor_hallencoder.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VOFA/vofa_debug.h:
 ../test.h:

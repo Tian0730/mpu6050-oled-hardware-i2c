@@ -38,7 +38,6 @@ void SpeedLoop_Update(float dt)
     static float accum_dt = 0.0f;
     accum_dt += dt;
 
-    /* 仅在新数据到达时运行 PID */
     if (IRDM_update_wheel_speed())
     {
         float current_speed = IRDM_get_average_speed();
@@ -116,3 +115,12 @@ void SpeedLoop_Reset(void)
     g_current_error = 0.0f;
     lc_printf("[SpeedLoop] Reset\r\n");
 }
+
+/// === VOFA+ 新增 getter/setter ===
+float SpeedLoop_GetTarget(void) { return g_target_speed; }
+float SpeedLoop_GetPTerm(void)  { return SpeedPID_GetPTerm(&g_speed_pid); }
+float SpeedLoop_GetITerm(void)  { return SpeedPID_GetITerm(&g_speed_pid); }
+float SpeedLoop_GetDTerm(void)  { return SpeedPID_GetDTerm(&g_speed_pid); }
+void  SpeedLoop_SetKP(float kp) { SpeedPID_SetKP(&g_speed_pid, kp); lc_printf("[VOFA] Speed KP=%.2f\r\n", kp); }
+void  SpeedLoop_SetKI(float ki) { SpeedPID_SetKI(&g_speed_pid, ki); lc_printf("[VOFA] Speed KI=%.3f\r\n", ki); }
+void  SpeedLoop_SetKD(float kd) { SpeedPID_SetKD(&g_speed_pid, kd); lc_printf("[VOFA] Speed KD=%.2f\r\n", kd); }

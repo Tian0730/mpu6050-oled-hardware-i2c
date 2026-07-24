@@ -16,4 +16,12 @@
 #define USE_FOLLOW_CONTROL  1   // 位置环控制 (灰度传感器 + follow)
 #define USE_SPEED_CONTROL   1   // 速度环控制 (编码器 + speed_control)
 
+/* ================================================================
+ * 超声波模块启用开关
+ * 1 = 避障模式, 0 = 循迹模式
+ * ================================================================ */
+#define USE_OBSTACLE_AVOIDANCE  0   // 模式切换
+
+#define USE_VOFA_DEBUG          0   // VOFA+串口在线调参（暂时关闭排查传感器）
+
 #endif  /* _CONTROL_CONFIG_H_ */

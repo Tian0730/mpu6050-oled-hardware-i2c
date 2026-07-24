@@ -114,6 +114,11 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 #define TIMER_0_INST_IRQHandler                                 TIMG0_IRQHandler
 #define TIMER_0_INST_INT_IRQN                                   (TIMG0_INT_IRQn)
 #define TIMER_0_INST_LOAD_VALUE                                         (49999U)
+/* Defines for TIMER_ULTRASONIC */
+#define TIMER_ULTRASONIC_INST                                            (TIMA0)
+#define TIMER_ULTRASONIC_INST_IRQHandler                        TIMA0_IRQHandler
+#define TIMER_ULTRASONIC_INST_INT_IRQN                          (TIMA0_INT_IRQn)
+#define TIMER_ULTRASONIC_INST_LOAD_VALUE                                (39999U)
 
 
 
@@ -237,6 +242,15 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 #define ENCODER_E2B_IIDX                                    (DL_GPIO_IIDX_DIO28)
 #define ENCODER_E2B_PIN                                         (DL_GPIO_PIN_28)
 #define ENCODER_E2B_IOMUX                                         (IOMUX_PINCM3)
+/* Port definition for Pin Group GPIO_ULTRASONIC */
+#define GPIO_ULTRASONIC_PORT                                             (GPIOB)
+
+/* Defines for PIN_ULTRASONIC_TRIG: GPIOB.8 with pinCMx 25 on package pin 60 */
+#define GPIO_ULTRASONIC_PIN_ULTRASONIC_TRIG_PIN                  (DL_GPIO_PIN_8)
+#define GPIO_ULTRASONIC_PIN_ULTRASONIC_TRIG_IOMUX                (IOMUX_PINCM25)
+/* Defines for PIN_ULTRASONIC_ECHO: GPIOB.15 with pinCMx 32 on package pin 3 */
+#define GPIO_ULTRASONIC_PIN_ULTRASONIC_ECHO_PIN                 (DL_GPIO_PIN_15)
+#define GPIO_ULTRASONIC_PIN_ULTRASONIC_ECHO_IOMUX                (IOMUX_PINCM32)
 
 
 
@@ -252,6 +266,7 @@ void SYSCFG_DL_SYSCTL_CLK_init(void);
 bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 void SYSCFG_DL_PWM_0_init(void);
 void SYSCFG_DL_TIMER_0_init(void);
+void SYSCFG_DL_TIMER_ULTRASONIC_init(void);
 void SYSCFG_DL_I2C_MPU6050_init(void);
 void SYSCFG_DL_I2C_OLED_init(void);
 void SYSCFG_DL_UART_0_init(void);

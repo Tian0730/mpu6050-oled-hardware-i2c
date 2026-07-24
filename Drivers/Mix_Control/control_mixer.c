@@ -4,7 +4,7 @@
 static uint32_t g_mix_base = 300;
 static int16_t  g_angle_diff = 0;
 static int16_t  g_follow_diff = 0;
-static int16_t  g_speed_diff = 0;    // 预留速度环
+static int16_t  g_speed_diff = 0;
 
 void Mixer_Init(uint32_t base_speed)
 {
@@ -21,7 +21,7 @@ void Mixer_SetFollowDiff(int16_t diff)
     g_follow_diff = diff;
 }
 
-void Mixer_SetSpeedDiff(int16_t diff)    // 预留速度环
+void Mixer_SetSpeedDiff(int16_t diff)
 {
     g_speed_diff = diff;
 }

@@ -220,7 +220,7 @@ int8_t GoStraight_StartAt(float target_yaw, uint32_t speed)
     g_straight_target_yaw = target_yaw;
     g_straight_speed      = speed;
 
-    AnglePD_Init(&g_straight_pd, STRAIGHT_KP, STRAIGHT_KD, STRAIGHT_LIMIT);
+    // AnglePD_Init(&g_straight_pd, STRAIGHT_KP, STRAIGHT_KD, STRAIGHT_LIMIT);
     AnglePD_Reset(&g_straight_pd);
 
     g_straight_state = TURN_STATE_RUNNING;
@@ -351,3 +351,12 @@ int16_t GoStraight_GetCorrection(void)
     AnglePD_Update(&g_straight_pd, g_straight_target_yaw, current_yaw);
     return (int16_t)g_straight_pd.output;
 }
+
+/// === VOFA+ 新增 getter/setter ===
+float GoStraight_GetPTerm(void)  { return AnglePD_GetPTerm(&g_straight_pd); }
+float GoStraight_GetDTerm(void)  { return AnglePD_GetDTerm(&g_straight_pd); }
+float GoStraight_GetError(void)  { return AnglePD_GetError(&g_straight_pd); }
+float GoStraight_GetOutput(void) { return AnglePD_GetOutput(&g_straight_pd); }
+void  GoStraight_SetKP(float kp) { AnglePD_SetKP(&g_straight_pd, kp); lc_printf("[VOFA] Angle KP=%.2f\r\n", kp); }
+void  GoStraight_SetKD(float kd) { AnglePD_SetKD(&g_straight_pd, kd); lc_printf("[VOFA] Angle KD=%.2f\r\n", kd); }
+/// === VOFA+ 新增 getter/setter END ===

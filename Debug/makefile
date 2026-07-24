@@ -29,6 +29,9 @@ ORDERED_OBJS += \
 "./Drivers/TB6612_Motor/bsp_tb6612.o" \
 "./Drivers/TB6612_Motor/follow.o" \
 "./Drivers/TB6612_Motor/turn.o" \
+"./Drivers/Ultrasonic_GPIO/Ultrasonic_Control.o" \
+"./Drivers/Ultrasonic_GPIO/ultrasonic_gpio.o" \
+"./Drivers/VOFA/vofa_debug.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -49,6 +52,8 @@ RMDIR := RMDIR /S/Q
 -include Drivers/Mix_Control/subdir_vars.mk
 -include Drivers/OLED_Hardware_I2C/subdir_vars.mk
 -include Drivers/TB6612_Motor/subdir_vars.mk
+-include Drivers/Ultrasonic_GPIO/subdir_vars.mk
+-include Drivers/VOFA/subdir_vars.mk
 -include subdir_rules.mk
 -include Drivers/AnglePID/subdir_rules.mk
 -include Drivers/Encoder/subdir_rules.mk
@@ -57,6 +62,8 @@ RMDIR := RMDIR /S/Q
 -include Drivers/Mix_Control/subdir_rules.mk
 -include Drivers/OLED_Hardware_I2C/subdir_rules.mk
 -include Drivers/TB6612_Motor/subdir_rules.mk
+-include Drivers/Ultrasonic_GPIO/subdir_rules.mk
+-include Drivers/VOFA/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -168,8 +175,8 @@ mpu6050-oled-hardware-i2c.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "test.o" "Drivers\AnglePID\angle_pid.o" "Drivers\Encoder\bsp_motor_hallencoder.o" "Drivers\Encoder\encoder.o" "Drivers\Encoder\speed_control.o" "Drivers\Encoder\speed_pid.o" "Drivers\IMU_AHRS\imu_ahrs.o" "Drivers\IMU_AHRS\mspm0_i2c.o" "Drivers\MSPM0\board.o" "Drivers\MSPM0\clock.o" "Drivers\MSPM0\interrupt.o" "Drivers\Mix_Control\control_mixer.o" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.o" "Drivers\TB6612_Motor\bsp_tb6612.o" "Drivers\TB6612_Motor\follow.o" "Drivers\TB6612_Motor\turn.o" 
-	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "test.d" "Drivers\AnglePID\angle_pid.d" "Drivers\Encoder\bsp_motor_hallencoder.d" "Drivers\Encoder\encoder.d" "Drivers\Encoder\speed_control.d" "Drivers\Encoder\speed_pid.d" "Drivers\IMU_AHRS\imu_ahrs.d" "Drivers\IMU_AHRS\mspm0_i2c.d" "Drivers\MSPM0\board.d" "Drivers\MSPM0\clock.d" "Drivers\MSPM0\interrupt.d" "Drivers\Mix_Control\control_mixer.d" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.d" "Drivers\TB6612_Motor\bsp_tb6612.d" "Drivers\TB6612_Motor\follow.d" "Drivers\TB6612_Motor\turn.d" 
+	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "test.o" "Drivers\AnglePID\angle_pid.o" "Drivers\Encoder\bsp_motor_hallencoder.o" "Drivers\Encoder\encoder.o" "Drivers\Encoder\speed_control.o" "Drivers\Encoder\speed_pid.o" "Drivers\IMU_AHRS\imu_ahrs.o" "Drivers\IMU_AHRS\mspm0_i2c.o" "Drivers\MSPM0\board.o" "Drivers\MSPM0\clock.o" "Drivers\MSPM0\interrupt.o" "Drivers\Mix_Control\control_mixer.o" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.o" "Drivers\TB6612_Motor\bsp_tb6612.o" "Drivers\TB6612_Motor\follow.o" "Drivers\TB6612_Motor\turn.o" "Drivers\Ultrasonic_GPIO\Ultrasonic_Control.o" "Drivers\Ultrasonic_GPIO\ultrasonic_gpio.o" "Drivers\VOFA\vofa_debug.o" 
+	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "test.d" "Drivers\AnglePID\angle_pid.d" "Drivers\Encoder\bsp_motor_hallencoder.d" "Drivers\Encoder\encoder.d" "Drivers\Encoder\speed_control.d" "Drivers\Encoder\speed_pid.d" "Drivers\IMU_AHRS\imu_ahrs.d" "Drivers\IMU_AHRS\mspm0_i2c.d" "Drivers\MSPM0\board.d" "Drivers\MSPM0\clock.d" "Drivers\MSPM0\interrupt.d" "Drivers\Mix_Control\control_mixer.d" "Drivers\OLED_Hardware_I2C\oled_hardware_i2c.d" "Drivers\TB6612_Motor\bsp_tb6612.d" "Drivers\TB6612_Motor\follow.d" "Drivers\TB6612_Motor\turn.d" "Drivers\Ultrasonic_GPIO\Ultrasonic_Control.d" "Drivers\Ultrasonic_GPIO\ultrasonic_gpio.d" "Drivers\VOFA\vofa_debug.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

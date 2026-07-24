@@ -29,6 +29,10 @@ void SpeedPID_Init(SpeedPID_t *pid, float kp, float ki, float kd,
     pid->last_error = 0.0f;
     pid->integral = 0.0f;
     pid->output = 0.0f;
+    pid->p_term = 0.0f;
+    pid->i_term = 0.0f;
+    pid->d_term = 0.0f;
+    pid->current_error = 0.0f;
     lc_printf("[PID] SpeedPID init: KP=%.2f KI=%.3f KD=%.2f ILim=%.1f OLim=%.1f\r\n",
               kp, ki, kd, integral_limit, output_limit);
 }
@@ -58,10 +62,11 @@ float SpeedPID_Update(SpeedPID_t *pid, float target, float current, float dt)
     }
     pid->last_error = error;
 
-    /* PID 输出 */
-    pid->output = pid->kp * error
-                + pid->ki * pid->integral
-                + pid->kd * derivative;
+    pid->current_error = error;
+    pid->p_term = pid->kp * error;
+    pid->i_term = pid->ki * pid->integral;
+    pid->d_term = pid->kd * derivative;
+    pid->output = pid->p_term + pid->i_term + pid->d_term;
     pid->output = clamp(pid->output, pid->output_limit);
 
     return pid->output;
@@ -80,4 +85,17 @@ void SpeedPID_Reset(SpeedPID_t *pid)
     pid->last_error = 0.0f;
     pid->integral = 0.0f;
     pid->output = 0.0f;
+    pid->p_term = 0.0f;
+    pid->i_term = 0.0f;
+    pid->d_term = 0.0f;
+    pid->current_error = 0.0f;
 }
+
+float SpeedPID_GetPTerm(const SpeedPID_t *pid)  { return pid->p_term; }
+float SpeedPID_GetITerm(const SpeedPID_t *pid)  { return pid->i_term; }
+float SpeedPID_GetDTerm(const SpeedPID_t *pid)  { return pid->d_term; }
+float SpeedPID_GetError(const SpeedPID_t *pid)  { return pid->current_error; }
+float SpeedPID_GetOutput(const SpeedPID_t *pid) { return pid->output; }
+void  SpeedPID_SetKP(SpeedPID_t *pid, float kp) { pid->kp = kp; }
+void  SpeedPID_SetKI(SpeedPID_t *pid, float ki) { pid->ki = ki; }
+void  SpeedPID_SetKD(SpeedPID_t *pid, float kd) { pid->kd = kd; }
