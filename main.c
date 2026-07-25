@@ -75,7 +75,7 @@ int main(void)
     OLED_ShowString(16*6,3,(uint8_t *)"Accel",8);
     OLED_ShowString(17*6,4,(uint8_t *)"Turn",8);
 
-    Mixer_Init(300);
+    Mixer_Init(CAR_DEFAULT_BASE_SPEED);
 
 #if USE_VOFA_DEBUG
     VOFA_Init();
@@ -204,8 +204,8 @@ int main(void)
          *    PRE_TURN_MS   - 预转延时(ms)，车子中心走到弯道中心所需时间
          *    TURN_COOLDOWN - 转弯后冷却(ms)，防止同一个弯重复触发
          * ================================================================ */
-        #define PRE_TURN_MS    300
-        #define TURN_COOLDOWN  500
+        #define PRE_TURN_MS    CAR_PRE_TURN_MS
+        #define TURN_COOLDOWN  CAR_TURN_COOLDOWN
 
         static enum { ST_STRAIGHT, ST_PRE_TURN, ST_TURNING } state = ST_STRAIGHT;
         static uint8_t was_on_black = 0;

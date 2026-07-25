@@ -2,6 +2,7 @@
 #define _TURN_H_
 
 #include <stdint.h>
+#include "car_config.h"
 
 /* ================================================================
  *  转弯角度环 PID 参数
@@ -12,23 +13,27 @@
  *    BASE_SPEED 太大 → 接近目标时冲过头
  *    MIN_SPEED  → 接近目标时的最低速度（克服静摩擦即可）
  *    NEAR_ZONE  → 误差小于此值后自动切换 MIN_SPEED
+ *
+ *  以上参数请在 car_config.h 中修改
  * ================================================================ */
-#define TURN_KP             0.5f   //0.01
-#define TURN_KD             0.15f    //0.6
-#define TURN_LIMIT          800.0f
-#define TURN_TOLERANCE      1.5f
-#define TURN_BASE_SPEED     300
-#define TURN_MIN_SPEED      0
-#define TURN_NEAR_ZONE      10.0f
-#define TURN_TIMEOUT_MS     3000
+#define TURN_KP             CAR_TURN_KP
+#define TURN_KD             CAR_TURN_KD
+#define TURN_LIMIT          CAR_TURN_LIMIT
+#define TURN_TOLERANCE      CAR_TURN_TOLERANCE
+#define TURN_BASE_SPEED     CAR_TURN_BASE_SPEED
+#define TURN_MIN_SPEED      CAR_TURN_MIN_SPEED
+#define TURN_NEAR_ZONE      CAR_TURN_NEAR_ZONE
+#define TURN_TIMEOUT_MS     CAR_TURN_TIMEOUT_MS
 
 /* ================================================================
  *  直线角度环 PID 参数
+ *
+ *  以上参数请在 car_config.h 中修改
  * ================================================================ */
-#define STRAIGHT_KP         35.0f
-#define STRAIGHT_KD         0.5f
-#define STRAIGHT_LIMIT      150.0f
-#define STRAIGHT_SPEED      400
+#define STRAIGHT_KP         CAR_STRAIGHT_KP
+#define STRAIGHT_KD         CAR_STRAIGHT_KD
+#define STRAIGHT_LIMIT      CAR_STRAIGHT_LIMIT
+#define STRAIGHT_SPEED      CAR_STRAIGHT_SPEED
 
 /* ================================================================
  *  状态枚举

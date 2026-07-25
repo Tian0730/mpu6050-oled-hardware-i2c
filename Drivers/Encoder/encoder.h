@@ -2,31 +2,35 @@
 #define __ENCODER_H__
 
 #include "board.h"
+#include "car_config.h"
 
 // 定时器采样周期 (ms)
 #define ENCODER_SAMPLE_PERIOD_MS    5
 
 // 降采样系数：累加N次定时器采样后再计算速度
 // 4次=20ms有效周期，约6~8脉冲/次，量化噪声降至~15%
-#define ENCODER_DECIMATION          6
+// 由 car_config.h 中的 CAR_ENCODER_DECIMATION 控制
+#define ENCODER_DECIMATION          CAR_ENCODER_DECIMATION
 
 // 速度低通滤波系数 (0~1, 越小越平滑, 越大越灵敏)
 // alpha=0.15 表示约 33ms 响应 63% 阶跃变化
-#define ENCODER_SPEED_FILTER_ALPHA   0.15f
+// 由 car_config.h 中的 CAR_ENCODER_SPEED_FILTER_ALPHA 控制
+#define ENCODER_SPEED_FILTER_ALPHA   CAR_ENCODER_SPEED_FILTER_ALPHA
 
 /***************************************************
-    注意： 请根据您的实际硬件参数调整以下宏定义：
+    注意： 请根据实际硬件参数调整以下宏定义：
 
     ENCODER_RESOLUTION - 编码器分辨率（线数）
     MOTOR_GEAR_RATIO - 电机减速比
     WHEEL_DIAMETER_MM - 车轮直径(mm)
     
+    以上参数请在 car_config.h 中修改
 ****************************************************/
 
 // 电机与编码器参数
-#define ENCODER_RESOLUTION          11          // 编码器分辨率（线数）
-#define MOTOR_GEAR_RATIO            21.3f       // 电机减速比
-#define WHEEL_DIAMETER_MM           65          // 车轮直径 (mm)
+#define ENCODER_RESOLUTION          CAR_ENCODER_RESOLUTION
+#define MOTOR_GEAR_RATIO            CAR_MOTOR_GEAR_RATIO
+#define WHEEL_DIAMETER_MM           CAR_WHEEL_DIAMETER_MM
 
 // 速度数据结构体
 typedef struct {

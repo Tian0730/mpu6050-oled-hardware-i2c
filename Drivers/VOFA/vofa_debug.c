@@ -21,6 +21,8 @@ uint8_t g_vofa_stop = 0;
 
 void VOFA_Init(void)
 {
+    NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
+    DL_UART_enableInterrupt(UART_0_INST, DL_UART_INTERRUPT_RX);
     lc_printf("[VOFA] Mode=%d (0=Speed 1=Angle 2=Follow) Ready\r\n", VOFA_MODE);
 }
 
@@ -125,7 +127,7 @@ static void VOFA_ParseCommand(const char *cmd)
     }
 }
 
-void VOFA_ReceivePoll(void)
+void UART_0_INST_IRQHandler(void)
 {
     while (DL_UART_Main_isRXFIFOEmpty(UART_0_INST) == false)
     {
@@ -145,4 +147,8 @@ void VOFA_ReceivePoll(void)
             rx_buf[rx_idx++] = c;
         }
     }
+}
+
+void VOFA_ReceivePoll(void)
+{
 }

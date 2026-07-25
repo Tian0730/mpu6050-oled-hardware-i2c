@@ -2,6 +2,7 @@
 #define __SPEED_CONTROL_H__
 
 #include <stdint.h>
+#include "car_config.h"
 
 /* ================================================================
  *  速度环 PID 参数
@@ -14,12 +15,14 @@
  *    KD 太大 → 对噪声敏感，电机抖动；KD 太小 → 阻尼不足
  *    INTEGRAL_LIMIT → 防止积分饱和，建议设为 OUTPUT_LIMIT 的 60%~80%
  *    OUTPUT_LIMIT   → 速度环输出上限，对应 mixer 的速度修正量
+ *
+ *  以上参数请在 car_config.h 中修改
  * ================================================================ */
-#define SPEED_KP             1.2f       // 1.2
-#define SPEED_KI             0.0f      // 0.01
-#define SPEED_KD             0.5f       // 0.2
-#define SPEED_INTEGRAL_LIMIT 300.0f
-#define SPEED_OUTPUT_LIMIT   400.0f
+#define SPEED_KP             CAR_SPEED_KP
+#define SPEED_KI             CAR_SPEED_KI
+#define SPEED_KD             CAR_SPEED_KD
+#define SPEED_INTEGRAL_LIMIT CAR_SPEED_INTEGRAL_LIMIT
+#define SPEED_OUTPUT_LIMIT   CAR_SPEED_OUTPUT_LIMIT
 
 /**
  * @brief 初始化速度环

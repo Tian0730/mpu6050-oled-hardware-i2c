@@ -86,6 +86,7 @@ main.o: ../main.c \
  D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_systick.h \
  ../main.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/control_config.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/car_config.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h \
@@ -203,6 +204,7 @@ D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_interrupt.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/driverlib/m0p/dl_systick.h:
 ../main.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/control_config.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Control\ System\ Mode/car_config.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/clock.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/interrupt.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/MSPM0/board.h:

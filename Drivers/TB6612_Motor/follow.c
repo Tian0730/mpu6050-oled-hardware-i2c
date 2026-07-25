@@ -2,6 +2,7 @@
 #include "board.h"
 #include "bsp_tb6612.h"
 #include "follow.h"
+#include "car_config.h"
 
 /******************************************************************
  * 循迹控制（仅提供位置环PID修正量，不直接驱动电机）
@@ -9,22 +10,16 @@
  * 大偏差：由主状态机处理（f1=右转触发，f8=左转触发）
  ******************************************************************/
 
-// //==================== 灰度位置环PID相关参数 ====================
-// #define KP              30      // 比例系数
-// #define KI              0       // 积分系数（消除稳态误差）
-// #define KD              14.0f   // 微分系数（抑制振动）
-// #define MAX_CORRECTION  200     // 最大修正量
-// #define MAX_INTEGRAL    100     // 积分限幅（防止积分饱和）
-
-static float g_follow_kp = 30.0f;
-static float g_follow_ki = 0.0f;
-static float g_follow_kd = 14.0f;
-#define  MAX_CORRECTION  200
-#define  MAX_INTEGRAL    100
+//==================== 灰度位置环PID相关参数 ====================
+static float g_follow_kp = CAR_FOLLOW_KP;
+static float g_follow_ki = CAR_FOLLOW_KI;
+static float g_follow_kd = CAR_FOLLOW_KD;
+#define  MAX_CORRECTION  CAR_FOLLOW_MAX_CORRECTION
+#define  MAX_INTEGRAL    CAR_FOLLOW_MAX_INTEGRAL
 
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
-static uint8_t sensor_filtered[8] = {0};  // 滤波后的传感器状态
+static uint8_t sensor_filtered[8] = {0};    // 滤波后的传感器状态
 static int32_t sensor_history[8] = {0};    // 传感器历史记录
 #define SENSOR_FILTER_COUNT 3  // 连续3次相同状态才确认
 
