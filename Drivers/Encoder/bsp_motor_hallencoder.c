@@ -110,9 +110,9 @@ void TIMER_0_INST_IRQHandler(void)
 	//编码器速度计算
 	if( DL_TimerG_getPendingInterrupt(TIMER_0_INST) == DL_TIMER_IIDX_ZERO )
 	{
-        /* 两个电机安装相反，所以编码器值也要相反 */
+        /* 大车的两个电机安装相反，所以编码器值也要相反 */
         Encoder_A.Obtained_Get_Encoder_Count = Encoder_A.Should_Get_Encoder_Count;
-        Encoder_B.Obtained_Get_Encoder_Count = -Encoder_B.Should_Get_Encoder_Count;
+        Encoder_B.Obtained_Get_Encoder_Count = Encoder_B.Should_Get_Encoder_Count;
 
         /* 编码器计数值清零 */
         Encoder_A.Should_Get_Encoder_Count = 0;
