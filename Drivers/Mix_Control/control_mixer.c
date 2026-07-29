@@ -6,9 +6,22 @@ static int16_t  g_angle_diff = 0;
 static int16_t  g_follow_diff = 0;
 static int16_t  g_speed_diff = 0;
 
+static float  g_outer_boost = 0.0f;
+
 void Mixer_Init(uint32_t base_speed)
 {
     g_mix_base = base_speed;
+    g_outer_boost = 0.0f;
+}
+
+void Mixer_SetBaseSpeed(uint32_t base_speed)
+{
+    g_mix_base = base_speed;
+}
+
+void Mixer_SetOuterBoost(float ratio)
+{
+    g_outer_boost = ratio;
 }
 
 void Mixer_SetAngleDiff(int16_t diff)
@@ -32,6 +45,16 @@ void Mixer_Apply(void)
     int32_t base  = (int32_t)g_mix_base + (int32_t)g_speed_diff;
     int32_t left  = base + total;
     int32_t right = base - total;
+
+    if (g_outer_boost > 0.001f) {
+        int32_t abs_total = (total > 0) ? total : -total;
+        int32_t boost = (int32_t)((float)abs_total * g_outer_boost);
+        if (total > 0) {
+            left += boost;
+        } else {
+            right += boost;
+        }
+    }
 
     if (left < 0)   left = 0;
     if (left > 999) left = 999;

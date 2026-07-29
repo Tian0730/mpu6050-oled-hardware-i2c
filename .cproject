@@ -151,7 +151,7 @@
                         </toolChain>
                     </folderInfo>
                     <sourceEntries>
-                        <entry excluding="Drivers/MPU6050|Drivers/LSM6DSV16X|Drivers/OLED_Hardware_SPI|Drivers/VL53L0X|Drivers/BNO08X_UART_RVC|Drivers/WIT|Drivers/Ultrasonic_Capture|Drivers/OLED_Software_SPI|Drivers/OLED_Software_I2C" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                        <entry excluding="Drivers/Ultrasonic_GPIO|Drivers/MPU6050|Drivers/LSM6DSV16X|Drivers/OLED_Hardware_SPI|Drivers/VL53L0X|Drivers/BNO08X_UART_RVC|Drivers/WIT|Drivers/Ultrasonic_Capture|Drivers/OLED_Software_SPI|Drivers/OLED_Software_I2C" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
                     </sourceEntries>
                 </configuration>
             </storageModule>

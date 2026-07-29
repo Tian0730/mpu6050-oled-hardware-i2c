@@ -17,6 +17,14 @@ static float g_follow_kd = CAR_FOLLOW_KD;
 #define  MAX_CORRECTION  CAR_FOLLOW_MAX_CORRECTION
 #define  MAX_INTEGRAL    CAR_FOLLOW_MAX_INTEGRAL
 
+// 直道/弯道双 PID 备份
+static float g_kp_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KP;
+static float g_ki_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KI;
+static float g_kd_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KD;
+static float g_kp_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KP;
+static float g_ki_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KI;
+static float g_kd_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KD;
+
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
 static uint8_t sensor_filtered[8] = {0};    // 滤波后的传感器状态
@@ -38,6 +46,9 @@ static float follow_p_term = 0.0f;
 static float follow_i_term = 0.0f;
 static float follow_d_term = 0.0f;
 static float follow_bias   = 0.0f;
+static float follow_bias_filt = 0.0f;
+static float follow_d_filt = 0.0f;
+static float follow_bias_deriv = 0.0f;
 
 /******************************************************************
  * 读取传感器状态
@@ -94,7 +105,7 @@ void IRDM_read_sensors(void)
 float IRDM_calculate_bias(void)
 {
     int sum_weight = 0, sum_active = 0;
-    const int weights[8] = {-35, -25, -15, -5, 5, 15, 25, 35};
+    const int weights[8] = {-30, -25, -20, -5, 5, 20, 25, 30};
     
     for (int i = 0; i < 8; i++) {
         if (sensor_states[i]) {
@@ -112,15 +123,19 @@ float IRDM_calculate_bias(void)
  ******************************************************************/
 void IRDM_UpdatePositionPID(float dt)
 {
-    float bias = IRDM_calculate_bias();
+    float bias_raw = IRDM_calculate_bias();
 
-    if (bias > 100.0f || bias < -100.0f) {
+    if (bias_raw > 100.0f || bias_raw < -100.0f) {
         last_correction = 0;
         return;
     }
 
-    /* 积分项：dt 归一化，消除主循环频率依赖 */
-    integral += bias * dt;
+    /* 对离散灰度偏差做一阶低通，降低弯道边缘抖动 */
+    follow_bias_filt += (bias_raw - follow_bias_filt) * CAR_FOLLOW_BIAS_LPF_ALPHA;
+    float bias = follow_bias_filt;
+
+    /* 积分项：每帧累加偏差，频率越高积分越快（配合 KI 调参） */
+    integral += bias;
     if (integral > MAX_INTEGRAL) integral = MAX_INTEGRAL;
     if (integral < -MAX_INTEGRAL) integral = -MAX_INTEGRAL;
 
@@ -129,18 +144,35 @@ void IRDM_UpdatePositionPID(float dt)
     if (dt > 0.0001f) {
         bias_diff = (bias - last_bias) / dt;
     }
+    /* 微分项低通，避免传感器量化带来的 D 抖动 */
+    follow_d_filt += (bias_diff - follow_d_filt) * CAR_FOLLOW_DTERM_LPF_ALPHA;
+    follow_bias_deriv = follow_d_filt;
     last_bias = bias;
 
     follow_bias   = bias;
     follow_p_term = bias * g_follow_kp;
     follow_i_term = integral * g_follow_ki;
-    follow_d_term = bias_diff * g_follow_kd;
+    follow_d_term = follow_d_filt * g_follow_kd;
     int correction = (int)(follow_p_term + follow_i_term + follow_d_term);
 
     if (correction > MAX_CORRECTION) correction = MAX_CORRECTION;
     if (correction < -MAX_CORRECTION) correction = -MAX_CORRECTION;
 
-    last_correction = (int16_t)correction;
+    /* 修正量斜率限制，避免进入/退出弯道时左右轮突变 */
+    if (dt > 0.0001f)
+    {
+        float max_step_f = CAR_FOLLOW_CORR_SLEW_PER_SEC * dt;
+        int16_t max_step = (int16_t)((max_step_f < 1.0f) ? 1.0f : max_step_f);
+        int16_t prev = last_correction;
+        int16_t delta = (int16_t)correction - prev;
+        if (delta > max_step) delta = max_step;
+        if (delta < -max_step) delta = -max_step;
+        last_correction = prev + delta;
+    }
+    else
+    {
+        last_correction = (int16_t)correction;
+    }
 }
 
 /******************************************************************
@@ -160,6 +192,30 @@ uint8_t IRDM_IsBlackLine(void)
         if (sensor_states[i]) return 1;
     }
     return 0;
+}
+
+/******************************************************************
+ * 是否全部传感器同时检测到黑线（启停线检测）
+ * 8 路全部触发 → 垂直线段（启停线）
+ ******************************************************************/
+uint8_t IRDM_IsAllBlack(void)
+{
+    for (int i = 0; i < 8; i++) {
+        if (!sensor_states[i]) return 0;
+    }
+    return 1;
+}
+
+/******************************************************************
+ * 统计当前检测到黑线的传感器数量
+ ******************************************************************/
+uint8_t IRDM_CountBlackSensors(void)
+{
+    uint8_t cnt = 0;
+    for (int i = 0; i < 8; i++) {
+        if (sensor_states[i]) cnt++;
+    }
+    return cnt;
 }
 
 /******************************************************************
@@ -204,9 +260,49 @@ uint8_t IRDM_get_sensor_state(uint8_t index)
 }
 
 float FollowLoop_GetBias(void)  { return follow_bias; }
+float FollowLoop_GetBiasDeriv(void) { return follow_bias_deriv; }
 float FollowLoop_GetPTerm(void) { return follow_p_term; }
 float FollowLoop_GetITerm(void) { return follow_i_term; }
 float FollowLoop_GetDTerm(void) { return follow_d_term; }
 void  FollowLoop_SetKP(float kp) { g_follow_kp = kp; lc_printf("[VOFA] Follow KP=%.2f\r\n", kp); }
 void  FollowLoop_SetKI(float ki) { g_follow_ki = ki; lc_printf("[VOFA] Follow KI=%.2f\r\n", ki); }
 void  FollowLoop_SetKD(float kd) { g_follow_kd = kd; lc_printf("[VOFA] Follow KD=%.2f\r\n", kd); }
+
+void FollowLoop_ResetIntegral(void)
+{
+    integral  = 0.0f;
+    last_bias = 0.0f;
+    follow_bias_filt = 0.0f;
+    follow_d_filt = 0.0f;
+}
+
+void FollowLoop_DecayIntegral(float decay)
+{
+    integral *= decay;
+}
+
+/*
+ *  直道/弯道 PID 切换
+ *
+ *  VOFA 兼容：切换时先保存当前 PID 到对应备份，再加载另一套。
+ *  这样 VOFA 实时调参的值不会因为切模式而丢失。
+ */
+void FollowLoop_SwitchToStraight(void)
+{
+    g_kp_curve = g_follow_kp;
+    g_ki_curve = g_follow_ki;
+    g_kd_curve = g_follow_kd;
+    g_follow_kp = g_kp_straight;
+    g_follow_ki = g_ki_straight;
+    g_follow_kd = g_kd_straight;
+}
+
+void FollowLoop_SwitchToCurve(void)
+{
+    g_kp_straight = g_follow_kp;
+    g_ki_straight = g_follow_ki;
+    g_kd_straight = g_follow_kd;
+    g_follow_kp = g_kp_curve;
+    g_follow_ki = g_ki_curve;
+    g_follow_kd = g_kd_curve;
+}

@@ -21,6 +21,8 @@ float    IRDM_calculate_bias(void);
 void     IRDM_UpdatePositionPID(float dt);
 int16_t  IRDM_GetCorrection(void);
 uint8_t  IRDM_IsBlackLine(void);
+uint8_t  IRDM_IsAllBlack(void);
+uint8_t  IRDM_CountBlackSensors(void);
 uint8_t  IRDM_NeedTurnLeft(void);
 uint8_t  IRDM_NeedTurnRight(void);
 uint8_t  IRDM_NeedTurnLeftFast(void);
@@ -28,11 +30,16 @@ uint8_t  IRDM_NeedTurnRightFast(void);
 uint8_t  IRDM_get_sensor_state(uint8_t index);
 
 float FollowLoop_GetBias(void);
+float FollowLoop_GetBiasDeriv(void);
 float FollowLoop_GetPTerm(void);
 float FollowLoop_GetITerm(void);
 float FollowLoop_GetDTerm(void);
 void  FollowLoop_SetKP(float kp);
 void  FollowLoop_SetKI(float ki);
 void  FollowLoop_SetKD(float kd);
+void  FollowLoop_SwitchToStraight(void);
+void  FollowLoop_SwitchToCurve(void);
+void  FollowLoop_ResetIntegral(void);
+void  FollowLoop_DecayIntegral(float decay);
 
 #endif  /* _FOLLOW_H_ */

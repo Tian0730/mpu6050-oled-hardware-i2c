@@ -4,6 +4,8 @@
 #include <stdint.h>
 
 void Mixer_Init(uint32_t base_speed);
+void Mixer_SetBaseSpeed(uint32_t base_speed);
+void Mixer_SetOuterBoost(float ratio);
 void Mixer_SetAngleDiff(int16_t diff);
 void Mixer_SetFollowDiff(int16_t diff);
 void Mixer_SetSpeedDiff(int16_t diff);

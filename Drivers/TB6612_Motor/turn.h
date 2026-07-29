@@ -61,6 +61,7 @@ int8_t GoStraight_Start(uint32_t speed);        /* 启动走直线，保持当�
 int8_t GoStraight_StartAt(float target_yaw, uint32_t speed); /* 指定目标航向走直线 */
 int8_t GoStraight_Poll(void);                   /* 轮询：0=执行中 -2=空闲 */
 void   GoStraight_Stop(void);                   /* 停止 */
+void   GoStraight_ResetPD(void);                /* 复位角度 PD（不清目标航向） */
 
 /* ================================================================
  *  正方形行走 API（非阻塞）
