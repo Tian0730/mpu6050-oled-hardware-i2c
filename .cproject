@@ -70,6 +70,9 @@
                                     <listOptionValue value="${PROJECT_ROOT}/Drivers/Mix_Control"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Drivers/Encoder"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Drivers/VOFA"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Drivers/Mode"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Drivers/SemicircleFollow"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Drivers/GyroRate"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.GENERATE_DWARF_DEBUG.1563762399" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.GENERATE_DWARF_DEBUG" value="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.GENERATE_DWARF_DEBUG.GDWARF_3" valueType="enumerated"/>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.CMD_FILE.366948669" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.CMD_FILE" valueType="stringList">

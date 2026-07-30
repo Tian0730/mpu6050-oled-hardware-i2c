@@ -37,6 +37,8 @@ float FollowLoop_GetDTerm(void);
 void  FollowLoop_SetKP(float kp);
 void  FollowLoop_SetKI(float ki);
 void  FollowLoop_SetKD(float kd);
+void  FollowLoop_SetStraightPID(float kp, float ki, float kd);
+void  FollowLoop_SetCurvePID(float kp, float ki, float kd);
 void  FollowLoop_SwitchToStraight(void);
 void  FollowLoop_SwitchToCurve(void);
 void  FollowLoop_ResetIntegral(void);

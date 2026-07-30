@@ -18,12 +18,12 @@ static float g_follow_kd = CAR_FOLLOW_KD;
 #define  MAX_INTEGRAL    CAR_FOLLOW_MAX_INTEGRAL
 
 // 直道/弯道双 PID 备份
-static float g_kp_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KP;
-static float g_ki_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KI;
-static float g_kd_straight = CAR_SEMICIRCLE_STRAIGHT_FOLLOW_KD;
-static float g_kp_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KP;
-static float g_ki_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KI;
-static float g_kd_curve    = CAR_SEMICIRCLE_CURVE_FOLLOW_KD;
+static float g_kp_straight = CAR_KEY1_STRAIGHT_FOLLOW_KP;
+static float g_ki_straight = CAR_KEY1_STRAIGHT_FOLLOW_KI;
+static float g_kd_straight = CAR_KEY1_STRAIGHT_FOLLOW_KD;
+static float g_kp_curve    = CAR_KEY1_CURVE_FOLLOW_KP;
+static float g_ki_curve    = CAR_KEY1_CURVE_FOLLOW_KI;
+static float g_kd_curve    = CAR_KEY1_CURVE_FOLLOW_KD;
 
 // 传感器状态
 static uint8_t sensor_states[8] = {0};      // 黑：1    白：0
@@ -105,7 +105,7 @@ void IRDM_read_sensors(void)
 float IRDM_calculate_bias(void)
 {
     int sum_weight = 0, sum_active = 0;
-    const int weights[8] = {-30, -25, -20, -5, 5, 20, 25, 30};
+    const int weights[8] = {-30, -25, -15, -5, 5, 15, 25, 30};
     
     for (int i = 0; i < 8; i++) {
         if (sensor_states[i]) {
@@ -305,4 +305,24 @@ void FollowLoop_SwitchToCurve(void)
     g_follow_kp = g_kp_curve;
     g_follow_ki = g_ki_curve;
     g_follow_kd = g_kd_curve;
+}
+
+/******************************************************************
+ *  设置直道 PID 参数（运行时覆盖，各模式独立调参）
+ ******************************************************************/
+void FollowLoop_SetStraightPID(float kp, float ki, float kd)
+{
+    g_kp_straight = kp;
+    g_ki_straight = ki;
+    g_kd_straight = kd;
+}
+
+/******************************************************************
+ *  设置弯道 PID 参数（运行时覆盖，各模式独立调参）
+ ******************************************************************/
+void FollowLoop_SetCurvePID(float kp, float ki, float kd)
+{
+    g_kp_curve = kp;
+    g_ki_curve = ki;
+    g_kd_curve = kd;
 }

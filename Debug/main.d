@@ -118,7 +118,11 @@ main.o: ../main.c \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h \
  D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VOFA/vofa_debug.h \
- ../test.h
+ ../test.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mode/button_mode.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mode/mode_speed_square.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/SemicircleFollow/semicircle_follow.h \
+ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/GyroRate/gyro_rate_control.h
 ti_msp_dl_config.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/msp/msp.h:
 D:/develop/TI/CCS/mspm0_sdk_2_10_00_04/source/ti/devices/DeviceFamily.h:
@@ -237,3 +241,7 @@ D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/encoder.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Encoder/speed_control.h:
 D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/VOFA/vofa_debug.h:
 ../test.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mode/button_mode.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/Mode/mode_speed_square.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/SemicircleFollow/semicircle_follow.h:
+D:/develop/TI/mpu6050-oled-hardware-i2c/Drivers/GyroRate/gyro_rate_control.h:

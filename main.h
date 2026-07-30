@@ -31,5 +31,9 @@
 #include "speed_control.h"
 #include "vofa_debug.h"
 #include "test.h"
+#include "button_mode.h"
+#include "mode_speed_square.h"
+#include "semicircle_follow.h"
+#include "gyro_rate_control.h"
 
 #endif  /* #ifndef _MAIN_H_ */

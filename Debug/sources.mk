@@ -121,10 +121,13 @@ SUBDIRS := \
 . \
 Drivers/AnglePID \
 Drivers/Encoder \
+Drivers/GyroRate \
 Drivers/IMU_AHRS \
 Drivers/MSPM0 \
 Drivers/Mix_Control \
+Drivers/Mode \
 Drivers/OLED_Hardware_I2C \
+Drivers/SemicircleFollow \
 Drivers/TB6612_Motor \
 Drivers/VOFA \
 
