@@ -36,6 +36,22 @@
 
 uint8_t oled_buffer[32];
 
+/* ================================================================
+ *  按键模式定义
+ * ================================================================ */
+typedef enum {
+    MODE_WAITING = 0,
+    MODE_KEY1,
+    MODE_KEY2,
+    MODE_KEY3,
+    MODE_DONE,
+} run_mode_t;
+
+/* 按键读取宏（上拉输入，按下为低电平） */
+#define KEY1_PRESSED()  (!DL_GPIO_readPins(KEY_PORT, KEY_KEY1_PIN))
+#define KEY2_PRESSED()  (!DL_GPIO_readPins(KEY_PORT, KEY_KEY2_PIN))
+#define KEY3_PRESSED()  (!DL_GPIO_readPins(KEY_PORT, KEY_KEY3_PIN))
+
 int main(void)
 {
     SYSCFG_DL_init();
@@ -83,13 +99,6 @@ int main(void)
     VOFA_Init();
 #endif
 
-#if USE_SEMICIRCLE_FOLLOW
-    FollowLoop_SetKP(CAR_SEMICIRCLE_CURVE_FOLLOW_KP);
-    FollowLoop_SetKI(CAR_SEMICIRCLE_CURVE_FOLLOW_KI);
-    FollowLoop_SetKD(CAR_SEMICIRCLE_CURVE_FOLLOW_KD);
-    Mixer_SetBaseSpeed(CAR_SEMICIRCLE_SPEED);
-#endif
-
 #if USE_SPEED_CONTROL
     Motor_Init();
     SpeedLoop_Init(200);
@@ -99,17 +108,104 @@ int main(void)
     Ultrasonic_Avoidance_Init();
 #endif
 
+    /* ================================================================
+     *  按键模式选择阶段
+     *  KEY1(B18): 20s 半圆循线（当前工程逻辑，速度 300）
+     *  KEY2(B17): 直线行走，右传感器(f7)见黑即停
+     *  KEY3(B19): 30s 半圆循线（速度降至 220）
+     * ================================================================ */
+    {
+        run_mode_t g_run_mode = MODE_WAITING;
+        uint32_t   g_mode_start_time = 0;
+        uint32_t   g_semicircle_base_speed = CAR_SEMICIRCLE_SPEED;
+        uint32_t   g_semicircle_speed_min  = CAR_SEMICIRCLE_SPEED_MIN;
+        uint32_t   g_semicircle_speed_max  = CAR_SEMICIRCLE_SPEED_MAX;
+
+        OLED_ShowString(0, 0, (uint8_t *)"SELECT MODE", 16);
+        OLED_ShowString(0, 2, (uint8_t *)"1:20s 2:Line 3:30s", 16);
+
+        while (g_run_mode == MODE_WAITING)
+        {
+            if (KEY1_PRESSED())
+            {
+                g_run_mode = MODE_KEY1;
+                g_mode_start_time = tick_ms;
+                g_semicircle_base_speed = CAR_SEMICIRCLE_SPEED;
+                g_semicircle_speed_min  = CAR_SEMICIRCLE_SPEED_MIN;
+                g_semicircle_speed_max  = CAR_SEMICIRCLE_SPEED_MAX;
+#if USE_SEMICIRCLE_FOLLOW
+                FollowLoop_SetKP(CAR_SEMICIRCLE_CURVE_FOLLOW_KP);
+                FollowLoop_SetKI(CAR_SEMICIRCLE_CURVE_FOLLOW_KI);
+                FollowLoop_SetKD(CAR_SEMICIRCLE_CURVE_FOLLOW_KD);
+                Mixer_SetBaseSpeed(g_semicircle_base_speed);
+#endif
+                OLED_Clear();
+                OLED_ShowString(0, 0, (uint8_t *)"MODE: KEY1 20s", 16);
+            }
+            else if (KEY2_PRESSED())
+            {
+                g_run_mode = MODE_KEY2;
+                g_mode_start_time = tick_ms;
+#if USE_SEMICIRCLE_FOLLOW
+                FollowLoop_SwitchToStraight();
+                Mixer_SetBaseSpeed(CAR_KEY2_SPEED);
+#endif
+                OLED_Clear();
+                OLED_ShowString(0, 0, (uint8_t *)"MODE: KEY2 200", 16);
+            }
+            else if (KEY3_PRESSED())
+            {
+                g_run_mode = MODE_KEY3;
+                g_mode_start_time = tick_ms;
+                g_semicircle_base_speed = CAR_KEY3_SPEED;
+                g_semicircle_speed_min  = CAR_KEY3_SPEED_MIN;
+                g_semicircle_speed_max  = CAR_KEY3_SPEED_MAX;
+#if USE_SEMICIRCLE_FOLLOW
+                FollowLoop_SetKP(CAR_SEMICIRCLE_CURVE_FOLLOW_KP);
+                FollowLoop_SetKI(CAR_SEMICIRCLE_CURVE_FOLLOW_KI);
+                FollowLoop_SetKD(CAR_SEMICIRCLE_CURVE_FOLLOW_KD);
+                Mixer_SetBaseSpeed(g_semicircle_base_speed);
+#endif
+                OLED_Clear();
+                OLED_ShowString(0, 0, (uint8_t *)"MODE: KEY3 30s", 16);
+            }
+            mspm0_delay_ms(10);
+        }
+
+        mspm0_delay_ms(500);    /* 按键消抖延时 */
+
+        g_mode_start_time = tick_ms;    /* 运动计时起点 */
+
     while (1) 
     {
 #if USE_OBSTACLE_AVOIDANCE
-        Ultrasonic_Test_Display(oled_buffer);       // 测试模式
-        // Ultrasonic_Avoidance_Update(oled_buffer);   // 避障模式
+        Ultrasonic_Test_Display(oled_buffer);
         continue;
 #endif
         static uint32_t last_update = 0;
         uint32_t now = tick_ms;
         float dt = (float)(now - last_update) / 1000.0f;
         last_update = now;
+
+        /* 运动时间显示（OLED 第4行），停机后冻结 */
+        {
+            static uint32_t elapsed_frozen = 0;
+            static uint32_t time_oled_last = 0;
+            uint32_t elapsed;
+            if (g_run_mode == MODE_DONE)
+                elapsed = elapsed_frozen;
+            else {
+                elapsed = now - g_mode_start_time;
+                elapsed_frozen = elapsed;
+            }
+            if ((int32_t)(now - time_oled_last) >= 200)
+            {
+                time_oled_last = now;
+                sprintf((char *)oled_buffer, "TIME: %u.%us",
+                        elapsed / 1000, (elapsed % 1000) / 100);
+                OLED_ShowString(0, 4, oled_buffer, 16);
+            }
+        }
 
         IMU_AHRS_Update_Data();           // 读取原始数据
         IMU_AHRS_Update_Attitude(dt);     // Mahony 姿态解算
@@ -128,6 +224,12 @@ int main(void)
             continue;
         }
 #endif
+
+        /* 模式已完成，停止一切控制 */
+        if (g_run_mode == MODE_DONE)
+        {
+            continue;
+        }
 
 #if USE_SPEED_CONTROL
         SpeedLoop_Update(dt);
@@ -179,6 +281,34 @@ int main(void)
 
 #if USE_SEMICIRCLE_FOLLOW
         /* ================================================================
+         *  Key2 模式：直线循迹（位置PID + 角度PID），f7见黑即停
+         * ================================================================ */
+        if (g_run_mode == MODE_KEY2)
+        {
+            IRDM_read_sensors();
+            IRDM_UpdatePositionPID(dt);
+
+            int16_t follow_corr = IRDM_GetCorrection();
+            int16_t angle_corr = GoStraight_GetCorrection();
+
+            Mixer_SetFollowDiff(follow_corr);
+            Mixer_SetAngleDiff(angle_corr);
+            Mixer_SetSpeedDiff(0);
+            Mixer_Apply();
+
+            if (IRDM_get_sensor_state(6))   /* f7 见黑 */
+            {
+                TB6612_Motor_Stop();
+                g_run_mode = MODE_DONE;
+                sprintf((char *)oled_buffer, "KEY2 DONE");
+                OLED_ShowString(0, 6, oled_buffer, 16);
+            }
+            continue;
+        }
+#endif
+
+#if USE_SEMICIRCLE_FOLLOW
+        /* ================================================================
          *  圆角矩形赛道巡线（闭合赛道 + 启停线）
          *
          *  赛道：半圆 → 直道 → 半圆(反向) → 直道 → 回到起点
@@ -200,7 +330,14 @@ int main(void)
             static uint8_t  was_lost            = 0;
             static uint32_t stop_cooldown_start = 0;
             static uint8_t  stop_cooldown_set   = 0;
-            static float    sc_base_speed_f     = (float)CAR_SEMICIRCLE_SPEED_MAX;
+            static float    sc_base_speed_f     = 0.0f;
+            static uint8_t  sc_speed_inited     = 0;
+
+            if (!sc_speed_inited)
+            {
+                sc_base_speed_f = (float)g_semicircle_speed_max;
+                sc_speed_inited = 1;
+            }
 
             IRDM_read_sensors();
 
@@ -220,6 +357,7 @@ int main(void)
                    >= CAR_SEMICIRCLE_STOP_COOLDOWN_MS)
             {
                 TB6612_Motor_Stop();
+                g_run_mode = MODE_DONE;
                 sprintf((char *)oled_buffer, "STOP BK:%d", black_cnt);
                 OLED_ShowString(0, 6, oled_buffer, 16);
                 continue;
@@ -317,8 +455,8 @@ int main(void)
                 float curve_level = (span > 0.001f) ? (bias_abs / span) : 1.0f;
                 if (curve_level > 1.0f) curve_level = 1.0f;
 
-                float target_base = (float)CAR_SEMICIRCLE_SPEED_MAX
-                                  - ((float)(CAR_SEMICIRCLE_SPEED_MAX - CAR_SEMICIRCLE_SPEED_MIN)
+                float target_base = (float)g_semicircle_speed_max
+                                  - ((float)(g_semicircle_speed_max - g_semicircle_speed_min)
                                   * curve_level);
 
                 if (dt > 0.0001f)
@@ -343,10 +481,10 @@ int main(void)
                     sc_base_speed_f = target_base;
                 }
 
-                if (sc_base_speed_f < (float)CAR_SEMICIRCLE_SPEED_MIN)
-                    sc_base_speed_f = (float)CAR_SEMICIRCLE_SPEED_MIN;
-                if (sc_base_speed_f > (float)CAR_SEMICIRCLE_SPEED_MAX)
-                    sc_base_speed_f = (float)CAR_SEMICIRCLE_SPEED_MAX;
+                if (sc_base_speed_f < (float)g_semicircle_speed_min)
+                    sc_base_speed_f = (float)g_semicircle_speed_min;
+                if (sc_base_speed_f > (float)g_semicircle_speed_max)
+                    sc_base_speed_f = (float)g_semicircle_speed_max;
 
                 Mixer_SetBaseSpeed((uint32_t)sc_base_speed_f);
 
@@ -414,6 +552,7 @@ int main(void)
                 if ((int32_t)(tick_ms - lost_since) >= CAR_SEMICIRCLE_LOST_TIMEOUT_MS)
                 {
                     TB6612_Motor_Stop();
+                    g_run_mode = MODE_DONE;
                     sprintf((char *)oled_buffer, "DONE");
                     OLED_ShowString(0, 6, oled_buffer, 16);
                 }
@@ -592,4 +731,5 @@ int main(void)
         }
 #endif
     }
+}
 }

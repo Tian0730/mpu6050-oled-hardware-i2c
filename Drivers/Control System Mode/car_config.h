@@ -167,6 +167,16 @@
 /* ---- 默认基础速度 ---- */
 #define CAR_DEFAULT_BASE_SPEED  300
 
+/* ---- Key3 低速模式参数 ---- */
+#define CAR_KEY3_SPEED              220     /* Key3 基础速度 */
+#define CAR_KEY3_SPEED_MIN          200     /* Key3 弯道最低速度 */
+#define CAR_KEY3_SPEED_MAX          230     /* Key3 直道最高速度 */
+
+/* ---- Key2 直线循迹模式参数 ---- */
+#define CAR_KEY2_SPEED              200     /* Key2 基础速度 */
+#define CAR_KEY2_SPEED_MIN          180     /* Key2 弯道最低速度 */
+#define CAR_KEY2_SPEED_MAX          210     /* Key2 直道最高速度 */
+
 #else
 #error "CAR_SELECT must be 0 or 1"
 #endif

@@ -251,6 +251,18 @@ bool SYSCFG_DL_SYSCTL_SYSPLL_init(void);
 /* Defines for PIN_ULTRASONIC_ECHO: GPIOB.15 with pinCMx 32 on package pin 3 */
 #define GPIO_ULTRASONIC_PIN_ULTRASONIC_ECHO_PIN                 (DL_GPIO_PIN_15)
 #define GPIO_ULTRASONIC_PIN_ULTRASONIC_ECHO_IOMUX                (IOMUX_PINCM32)
+/* Port definition for Pin Group KEY */
+#define KEY_PORT                                                         (GPIOB)
+
+/* Defines for KEY1: GPIOB.18 with pinCMx 44 on package pin 15 */
+#define KEY_KEY1_PIN                                            (DL_GPIO_PIN_18)
+#define KEY_KEY1_IOMUX                                           (IOMUX_PINCM44)
+/* Defines for KEY2: GPIOB.17 with pinCMx 43 on package pin 14 */
+#define KEY_KEY2_PIN                                            (DL_GPIO_PIN_17)
+#define KEY_KEY2_IOMUX                                           (IOMUX_PINCM43)
+/* Defines for KEY3: GPIOB.19 with pinCMx 45 on package pin 16 */
+#define KEY_KEY3_PIN                                            (DL_GPIO_PIN_19)
+#define KEY_KEY3_IOMUX                                           (IOMUX_PINCM45)
 
 
 
