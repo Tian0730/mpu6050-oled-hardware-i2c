@@ -34,6 +34,8 @@
 #include "button_mode.h"
 #include "mode_speed_square.h"
 #include "semicircle_follow.h"
+#include "semicircle_follow_plus.h"
 #include "gyro_rate_control.h"
+#include "gyro_rate_test.h"
 
 #endif  /* #ifndef _MAIN_H_ */

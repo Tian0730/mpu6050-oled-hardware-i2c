@@ -63,7 +63,7 @@ void ModeSquareTrack_Run(float dt, uint32_t now)
         /* 预转期间：速度环 + 角度环，确保直线走到弯道中心 */
 #if USE_ANGLE_CONTROL
         int16_t angle_corr = GoStraight_GetCorrection();
-        Mixer_SetAngleDiff(angle_corr);
+        Mixer_SetAngleDiff(-angle_corr);
 #else
         Mixer_SetAngleDiff(0);
 #endif
@@ -148,7 +148,7 @@ void ModeSquareTrack_Run(float dt, uint32_t now)
 
             /* 按配置开关决定几环参与 */
             Mixer_SetFollowDiff(follow_corr);
-            Mixer_SetAngleDiff(angle_corr);
+            Mixer_SetAngleDiff(-angle_corr);
             Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
 #if USE_GYRO_RATE_CONTROL
             Mixer_SetGyroRateDiff(GyroRateLoop_GetCorrection());
@@ -166,7 +166,7 @@ void ModeSquareTrack_Run(float dt, uint32_t now)
             int16_t angle_corr = 0;
 #endif
             Mixer_SetSpeedDiff(SpeedLoop_GetCorrection());
-            Mixer_SetAngleDiff(angle_corr);
+            Mixer_SetAngleDiff(-angle_corr);
             Mixer_SetFollowDiff(0);
 #if USE_GYRO_RATE_CONTROL
             Mixer_SetGyroRateDiff(GyroRateLoop_GetCorrection());

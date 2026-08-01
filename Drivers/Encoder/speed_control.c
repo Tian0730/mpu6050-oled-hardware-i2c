@@ -76,6 +76,19 @@ void SpeedLoop_SetTarget(float target_speed_mmps)
 }
 
 /******************************************************************
+ * 函 数 名 称：SpeedLoop_RampTarget
+ * 函 数 说 明：平滑修改目标速度，不重置PID积分
+ * 函 数 形 参：target_speed_mmps-新的目标线速度(mm/s)
+ * 函 数 返 回：无
+ * 作       者：tian
+ * 备       注：用于匀加速启动，避免积分频繁清零
+******************************************************************/
+void SpeedLoop_RampTarget(float target_speed_mmps)
+{
+    g_target_speed = target_speed_mmps;
+}
+
+/******************************************************************
  * 函 数 名 称：SpeedLoop_GetCurrentSpeed
  * 函 数 说 明：获取当前实际平均速度
  * 函 数 形 参：无

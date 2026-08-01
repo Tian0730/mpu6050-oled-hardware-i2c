@@ -123,6 +123,11 @@ int main(void)
         IMU_AHRS_Update_Data();           // 读取原始数据
         IMU_AHRS_Update_Attitude(dt);     // Mahony 姿态解算
 
+#if USE_GYRO_RATE_TEST
+        GyroRateTest_Run(dt, now);
+        continue;
+#endif
+
 #if USE_VOFA_DEBUG
         VOFA_ReceivePoll();
         static uint32_t vofa_last = 0;
@@ -169,7 +174,7 @@ int main(void)
         }
 #endif
 
-        /*
+        
         static uint32_t oled_last_update = 0;
         if ((int32_t)(now - oled_last_update) >= 50)
         {
@@ -177,6 +182,7 @@ int main(void)
 
             const IMU_AHRS_Data_t *imu = IMU_AHRS_GetData();
 
+            /*
             sprintf((char *)oled_buffer, "%-6.1f", imu->pitch);
             OLED_ShowString(5*8,0,oled_buffer,16);
             sprintf((char *)oled_buffer, "%-6.1f", imu->roll);
@@ -193,10 +199,13 @@ int main(void)
 
             sprintf((char *)oled_buffer, "%6.1f", IMU_AHRS_TurnAngle_Get());
             OLED_ShowString(15*6,5,oled_buffer,8);
+            */
         }
-*/
 
-#if USE_SEMICIRCLE_FOLLOW
+
+#if USE_SEMICIRCLE_FOLLOW_PLUS
+        SemicircleFollowPlus_Run(dt);
+#elif USE_SEMICIRCLE_FOLLOW
         SemicircleFollow_Run(dt);
 #elif USE_SPEED_CONTROL && !USE_ANGLE_CONTROL && !USE_FOLLOW_CONTROL
         ModeSpeedLoop_Run(dt, now);
